@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aegis Threat Protocol - Cyber Roguelike RPG</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #050811;
+      --bg-radial: radial-gradient(circle at 50% 40%, #0d1b2e 0%, #040712 100%);
+      --bg-panel: rgba(10, 22, 38, 0.65);
+      --border-glow: rgba(0, 243, 255, 0.25);
+      --cyan-glow: #00f3ff;
+      --cyan-dim: rgba(0, 243, 255, 0.3);
+      --red-glow: #ff0055;
+      --red-dim: rgba(255, 0, 85, 0.3);
+      --orange-glow: #ffaa00;
+      --green-glow: #39ff14;
+      --purple-glow: #b026ff;
+      --purple-dim: rgba(176, 38, 255, 0.3);
+      --text-primary: #e2f1ff;
+      --text-gray: #7d96b4;
+      --font-cyber: 'Share Tech Mono', monospace;
+      --font-header: 'Orbitron', sans-serif;
+      --font-ui: 'Rajdhani', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-radial);
+      color: var(--text-primary);
+      font-family: var(--font-cyber);
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    body::before {
+      content: " "; display: block; position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.3) 50%);
+      background-size: 100% 4px; z-index: 9999; pointer-events: none;
+      opacity: 0.25; animation: scanline-flicker 0.15s infinite;
+    }
+    @keyframes scanline-flicker { 0%{opacity:0.22} 50%{opacity:0.28} 100%{opacity:0.22} }
+    header {
+      width:100%;padding:24px;text-align:center;
+      border-bottom:2px solid var(--border-glow);
+      background:linear-gradient(180deg,rgba(13,27,46,0.8) 0%,rgba(5,8,17,0.8) 100%);
+      box-shadow:0 5px 25px rgba(0,243,255,0.1);
+    }
+    h1 {
+      font-family:var(--font-header);font-size:2.5rem;letter-spacing:6px;
+      background:linear-gradient(90deg,var(--cyan-glow),var(--purple-glow));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 8px rgba(0,243,255,0.3));
+    }
+    .main-container {
+      display:flex;flex-direction:row;max-width:1200px;width:100%;
+      margin:25px auto;gap:25px;padding:0 15px;
+    }
+    .left-panel { flex:2;display:flex;flex-direction:column;gap:25px; }
+    .right-panel { flex:1;display:flex;flex-direction:column;gap:25px;max-height:850px; }
+    .panel {
+      background:var(--bg-panel);backdrop-filter:blur(12px) saturate(180%);
+      -webkit-backdrop-filter:blur(12px) saturate(180%);
+      border:1px solid var(--border-glow);border-radius:4px;
+      padding:20px;position:relative;
+      box-shadow:0 8px 32px 0 rgba(0,0,0,0.5),inset 0 0 12px rgba(0,243,255,0.05);
+      transition:all 0.3s cubic-bezier(0.25,0.8,0.25,1);
+    }
+    .panel::before {
+      content:'';position:absolute;top:-1px;left:-1px;width:15px;height:15px;
+      border-top:2px solid var(--cyan-glow);border-left:2px solid var(--cyan-glow);
+    }
+    .panel::after {
+      content:'';position:absolute;bottom:-1px;right:-1px;width:15px;height:15px;
+      border-bottom:2px solid var(--cyan-glow);border-right:2px solid var(--cyan-glow);opacity:0.5;
+    }
+    .screen { display:none; }
+    .screen.active { display:flex;flex-direction:column; }
+    .class-grid {
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:15px;margin-top:15px;
+    }
+    .class-card {
+      border:1px solid var(--border-glow);background:rgba(255,255,255,0.01);
+      padding:15px;border-radius:4px;cursor:pointer;
+      transition:all 0.3s ease;text-align:center;
+    }
+    .class-card:hover,.class-card.selected {
+      border-color:var(--cyan-glow);background:rgba(0,243,255,0.07);
+      box-shadow:0 0 15px rgba(0,243,255,0.25);
+    }
+    #gameCanvas {
+      background-color:#03060a;border:2px solid var(--border-glow);
+      width:100%;height:400px;border-radius:4px;
+      box-shadow:0 0 25px rgba(0,243,255,0.1);
+    }
+    .btn {
+      background:rgba(0,243,255,0.05);border:1px solid var(--cyan-glow);
+      color:var(--cyan-glow);padding:8px 16px;font-family:var(--font-cyber);
+      text-transform:uppercase;letter-spacing:1.5px;
+      clip-path:polygon(0 0,90% 0,100% 30%,100% 100%,10% 100%,0 70%);
+      cursor:pointer;transition:all 0.3s;
+    }
+    .btn:hover {
+      background:var(--cyan-glow);color:#000;box-shadow:0 0 15px var(--cyan-glow);
+    }
+    .btn:disabled {
+      border-color:#3f4e5f;color:#3f4e5f;cursor:not-allowed;
+      box-shadow:none;background:transparent;clip-path:none;
+    }
+    .log-box {
+      background:rgba(5,8,17,0.7);border:1px solid rgba(0,243,255,0.15);
+      padding:15px;height:220px;overflow-y:auto;font-size:0.85rem;
+      color:var(--text-gray);border-radius:4px;
+      scrollbar-width:thin;scrollbar-color:var(--cyan-glow) rgba(0,0,0,0.2);
+    }
+    .log-entry {
+      margin-bottom:8px;line-height:1.4;border-left:2px solid var(--cyan-glow);
+      padding-left:10px;animation:entry-flicker 0.2s ease-out;
+    }
+    @keyframes entry-flicker { from{opacity:0;transform:translateX(-5px)} to{opacity:1;transform:translateX(0)} }
+    .draft-options { display:flex;flex-direction:column;gap:12px;margin-top:15px; }
+    .draft-option {
+      background:rgba(176,38,255,0.03);border:1px solid var(--border-glow);
+      padding:15px;border-radius:4px;cursor:pointer;transition:all 0.2s;
+    }
+    .draft-option:hover {
+      border-color:var(--purple-glow);background:rgba(176,38,255,0.08);
+      box-shadow:0 0 15px rgba(176,38,255,0.35);
+    }
+
+    /* ── ABILITY PANEL (NEW) ── */
+    #ability-panel {
+      display:none;background:#0a0a0a;border:2px solid var(--cyan-glow);
+      border-radius:4px;padding:16px;
+      box-shadow:0 0 20px rgba(0,243,255,0.15),inset 0 0 10px rgba(0,243,255,0.05);
+    }
+    #ability-panel.visible { display:block; }
+    #ability-panel > h3 {
+      font-family:var(--font-header);font-size:1rem;color:var(--cyan-glow);
+      letter-spacing:3px;margin-bottom:12px;text-transform:uppercase;
+      text-shadow:0 0 6px rgba(0,243,255,0.5);
+    }
+    #ability-list {
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:10px;margin-bottom:14px;
+    }
+    .ability-btn {
+      background:rgba(0,243,255,0.03);border:1px solid var(--cyan-glow);
+      color:var(--text-primary);padding:10px 8px;font-family:var(--font-cyber);
+      font-size:0.78rem;line-height:1.3;border-radius:3px;
+      cursor:pointer;transition:all 0.2s;text-align:center;
+      position:relative;display:flex;flex-direction:column;gap:4px;
+    }
+    .ability-btn:hover:not(.on-cooldown) {
+      background:rgba(0,243,255,0.1);box-shadow:0 0 12px rgba(0,243,255,0.3);
+    }
+    .ability-btn .ability-name { font-weight:bold;font-size:0.82rem;letter-spacing:0.5px; }
+    .ability-btn .cooldown-badge { font-size:0.7rem;font-weight:bold; }
+    .ability-btn .cooldown-badge.ready { color:var(--green-glow); }
+    .ability-btn .cooldown-badge.on-cd { color:var(--red-glow); }
+    .ability-btn.on-cooldown {
+      border-color:#2a2a2a;background:rgba(30,30,30,0.4);
+      color:#555;cursor:not-allowed;box-shadow:none;
+    }
+    .ability-btn[data-tooltip]:hover::after {
+      content:attr(data-tooltip);
+      position:absolute;bottom:calc(100% + 6px);left:50%;
+      transform:translateX(-50%);background:#0d1b2e;
+      border:1px solid var(--purple-glow);color:var(--text-primary);
+      padding:6px 10px;border-radius:3px;font-size:0.72rem;
+      white-space:nowrap;z-index:100;
+      box-shadow:0 0 8px rgba(176,38,255,0.3);pointer-events:none;
+    }
+    #combat-log {
+      background:#050505;border:1px solid rgba(0,243,255,0.12);
+      border-radius:3px;padding:10px 12px;height:120px;overflow-y:auto;
+      font-size:0.78rem;color:var(--text-gray);font-family:var(--font-cyber);
+      scrollbar-width:thin;scrollbar-color:var(--cyan-glow) rgba(0,0,0,0.2);
+    }
+    #combat-log .cl-entry {
+      margin-bottom:5px;border-left:2px solid var(--cyan-glow);
+      padding-left:8px;animation:entry-flicker 0.2s ease-out;
+    }
+    #combat-log .cl-entry.dmg { border-left-color:var(--red-glow); }
+    #combat-log .cl-entry.heal { border-left-color:var(--green-glow); }
+    #combat-log .cl-entry.buff { border-left-color:var(--purple-glow); }
+    #combat-log .cl-entry.info { border-left-color:var(--orange-glow); }
+
+    /* ── NARRATIVE POPUP OVERLAY (NEW) ── */
+    .narrative-backdrop {
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.82);
+      backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+      z-index:10000;display:flex;justify-content:center;align-items:center;
+      animation:narr-fade-in 0.3s ease-out;
+    }
+    @keyframes narr-fade-in { from{opacity:0} to{opacity:1} }
+    .narrative-content {
+      background:#0a0a0a;border:2px solid var(--purple-glow);
+      border-radius:4px;padding:24px 28px;max-width:560px;width:90%;
+      box-shadow:0 0 30px rgba(176,38,255,0.25),inset 0 0 15px rgba(176,38,255,0.05);
+      animation:narr-slide-in 0.3s ease-out;
+    }
+    @keyframes narr-slide-in { from{transform:translateY(-20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .narrative-title {
+      font-family:var(--font-header);font-size:1.4rem;color:var(--purple-glow);
+      letter-spacing:2px;margin-bottom:12px;
+      text-shadow:0 0 8px rgba(176,38,255,0.4);text-transform:uppercase;
+    }
+    .narrative-desc {
+      font-size:0.9rem;color:var(--text-primary);margin-bottom:14px;
+      line-height:1.6;border-left:2px solid var(--purple-glow);
+      padding-left:12px;
+    }
+    .narrative-lore {
+      background:rgba(176,38,255,0.05);border:1px solid rgba(176,38,255,0.2);
+      border-radius:3px;padding:12px 14px;margin-bottom:18px;
+      font-size:0.82rem;color:var(--text-gray);line-height:1.5;
+      font-style:italic;
+    }
+    .narrative-choices { display:flex;flex-direction:column;gap:10px; }
+    .narrative-choice-btn {
+      background:rgba(176,38,255,0.05);border:1px solid var(--purple-glow);
+      color:var(--text-primary);padding:12px 14px;font-family:var(--font-cyber);
+      font-size:0.82rem;border-radius:3px;cursor:pointer;
+      transition:all 0.2s;text-align:left;display:flex;
+      flex-direction:column;gap:4px;
+    }
+    .narrative-choice-btn:hover {
+      background:rgba(176,38,255,0.12);box-shadow:0 0 12px rgba(176,38,255,0.3);
+    }
+    .narrative-choice-btn .choice-label {
+      font-weight:bold;font-size:0.88rem;color:var(--purple-glow);
+    }
+    .narrative-choice-btn .choice-desc { color:var(--text-gray);font-size:0.78rem; }
+    .narrative-choice-btn .choice-effect {
+      font-size:0.72rem;color:var(--orange-glow);font-weight:bold;margin-top:2px;
+    }
+    .narrative-dismiss {
+      margin-top:16px;text-align:center;
+    }
+
+    /* ── LEVEL/XP BAR (ENHANCED) ── */
+    .level-bar-container {
+      background:rgba(10,22,38,0.8);border:1px solid var(--border-glow);
+      border-radius:3px;padding:8px 12px;margin-bottom:10px;
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .level-bar-row {
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:0.8rem;
+    }
+    .level-bar-row .lvl-label { color:var(--cyan-glow);font-weight:bold;font-family:var(--font-header);font-size:0.75rem;letter-spacing:1px; }
+    .level-bar-row .credits-label { color:var(--green-glow);font-weight:bold; }
+    .hp-bar-track, .xp-bar-track {
+      background:#111e2f;height:8px;border-radius:2px;position:relative;overflow:hidden;
+    }
+    .hp-bar-fill { background:var(--red-glow);height:100%;transition:width 0.3s;border-radius:2px; }
+    .xp-bar-fill { background:var(--purple-glow);height:100%;transition:width 0.3s;border-radius:2px; }
+    .bar-label-text { font-size:0.7rem;color:var(--text-gray);text-align:center;margin-top:2px; }
+    .level-label-row { display:flex;justify-content:space-between;font-size:0.72rem;margin-top:2px; }
+    .level-label-row span { color:var(--cyan-glow);font-family:var(--font-header);letter-spacing:1px; }
+
+    .animation-preview-tool {
+      background:rgba(10,22,38,0.8);border-top:2px solid var(--border-glow);
+      width:100%;padding:25px;margin-top:30px;
+      display:flex;flex-direction:column;align-items:center;gap:15px;
+    }
+    .preview-canvas-container { display:flex;gap:20px;flex-wrap:wrap;justify-content:center; }
+    .preview-card { border:1px solid var(--border-glow);background:#03060a;padding:10px;border-radius:4px;text-align:center; }
+    .preview-card canvas { width:140px;height:140px;background:#05080c;border-radius:4px; }
+    .preview-controls { display:flex;gap:15px;margin-bottom:10px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>AEGIS THREAT PROTOCOL</h1>
+    <p style="color:var(--text-gray);margin-top:5px;">Earth-2142 Node-Infiltration Roguelike RPG</p>
+  </header>
+
+  <!-- MAIN MENU SCREEN -->
+  <div id="mainMenuScreen" class="panel" style="max-width:800px;width:calc(100% - 30px);margin:30px auto;text-align:center;background-image:url('./cyber_menu_bg.png');background-size:cover;background-position:center;min-height:350px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;box-shadow:0 0 30px rgba(0,243,255,0.2),inset 0 0 20px rgba(0,0,0,0.8);">
+    <h2 style="font-family:var(--font-header);font-size:2.2rem;color:var(--cyan-glow);text-shadow:0 0 10px rgba(0,243,255,0.8),2px 2px 2px #000;">// SYSTEM ENTRY</h2>
+    <p style="color:#fff;text-shadow:0 0 4px #000,1px 1px 1px #000,-1px -1px 1px #000;font-weight:bold;max-width:500px;font-size:1.1rem;line-height:1.4;padding:10px;background:rgba(0,0,0,0.4);border-radius:4px;">Breach the secure network infrastructure of Neo-Tokyo and New London. Bypass patrolling grid security bots and deploy the payload.</p>
+    <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn" id="startNewRunBtn">INITIALIZE NEW RUN</button>
+      <button class="btn" id="saveSystemStateBtn" style="border-color:var(--green-glow);color:var(--green-glow);">SAVE INTRUSION STATE</button>
+      <button class="btn" id="loadSystemStateBtn" style="border-color:var(--orange-glow);color:var(--orange-glow);">LOAD SYSTEM RESTORE</button>
+    </div>
+  </div>
+
+  <div class="main-container" id="gameplayContainer" style="display:none;">
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <!-- CLASS SELECTION -->
+      <div id="classSelectScreen" class="panel screen">
+        <h2 style="color:var(--cyan-glow);margin-bottom:10px;">// CHOOSE YOUR INFILTRATOR</h2>
+        <p style="color:var(--text-gray);">Select your cybernetic specification to breach the Aegis megacity network.</p>
+        <div class="class-grid" id="classGrid"></div>
+      </div>
+
+      <!-- MAIN GAMEPLAY BOARD / COMBAT VIEW -->
+      <div id="boardScreen" class="panel screen">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h2 id="screenTitle" style="color:var(--cyan-glow);">// INFILTRATING AEGIS ROUTE</h2>
+          <div id="diceControls">
+            <button id="rollBtn" class="btn">ROLL SECURITY DECISION</button>
+          </div>
+        </div>
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+        <!-- ═══ ABILITY PANEL ═══ -->
+        <div id="ability-panel">
+          <h3>// COMBAT ABILITIES</h3>
+          <div id="ability-list"></div>
+          <h3 style="margin-top:8px;margin-bottom:6px;">// COMBAT LOG</h3>
+          <div id="combat-log"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <!-- ═══ PLAYER STATUS + LEVEL BAR ═══ -->
+      <div class="panel">
+        <h3 style="color:var(--cyan-glow);margin-bottom:10px;">// RUNNER MONITOR</h3>
+        <div id="playerHUD">
+          <!-- LEVEL / XP / HP BAR -->
+          <div class="level-bar-container" id="levelBarContainer">
+            <div class="level-bar-row">
+              <span class="lvl-label" id="levelLabel">LVL 1</span>
+              <span class="credits-label" id="hudCredits">0c</span>
+            </div>
+            <div class="hp-bar-track">
+              <div class="hp-bar-fill" id="hpBarFill" style="width:100%"></div>
+            </div>
+            <div class="bar-label-text" id="hpBarText">HP 0 / 0</div>
+            <div class="xp-bar-track">
+              <div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div>
+            </div>
+            <div class="bar-label-text" id="xpBarText">XP 0 / 100</div>
+          </div>
+          <p style="margin-top:8px;">Spec: <span id="hudSpec" style="font-weight:bold;color:var(--cyan-glow);">-</span></p>
+          <p>Threat level: <span id="hudLevel" style="color:var(--orange-glow);">Level 1</span></p>
+        </div>
+      </div>
+
+      <!-- SHOP SECTION -->
+      <div class="panel" id="terminalShopPanel">
+        <h3 style="color:var(--purple-glow);margin-bottom:10px;">// SECURE SHOP TERMINAL</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a293d;padding-bottom:6px;">
+            <span>Nano-Alloy Armor (+30 HP)</span>
+            <button class="btn" style="padding:4px 8px;font-size:0.75rem;" id="buyNanoArmor">Buy [150c]</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a293d;padding-bottom:6px;">
+            <span>Stim Injectors (+4 Speed)</span>
+            <button class="btn" style="padding:4px 8px;font-size:0.75rem;" id="buyStimBoost">Buy [200c]</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a293d;padding-bottom:6px;">
+            <span>Weapon Tuning (+5 Dmg)</span>
+            <button class="btn" style="padding:4px 8px;font-size:0.75rem;" id="buyWeaponTuning">Buy [200c]</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:4px;">
+            <span style="color:var(--cyan-glow);">Unlock Netrunner Hacker</span>
+            <button class="btn" style="padding:4px 8px;font-size:0.75rem;" id="unlockHacker">Unlock [400c]</button>
+          </div>
+        </div>
+        <div id="shopDynamicList" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <!-- LIVE ACTION LOG -->
+      <div class="panel" style="flex-grow:1;display:flex;flex-direction:column;">
+        <h3 style="color:var(--cyan-glow);margin-bottom:10px;">// TACTICAL SYSTEM FEED</h3>
+        <div class="log-box" id="systemLog" style="flex-grow:1;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPGRADE DRAFT OVERLAY -->
+  <div id="draftOverlay" class="panel" style="display:none;max-width:600px;width:calc(100% - 20px);margin:10px auto;">
+    <h3 style="color:var(--purple-glow);margin-bottom:8px;">// UPGRADE BREACH DETECTED</h3>
+    <p style="color:var(--text-gray);">Select one of the following cybernetic upgrades to enhance system survival.</p>
+    <div class="draft-options" id="draftOptions"></div>
+  </div>
+
+  <!-- SAFEHOUSE OVERLAY -->
+  <div id="safehouseOverlay" class="panel" style="display:none;max-width:600px;width:calc(100% - 20px);margin:10px auto;">
+    <h3 style="color:var(--green-glow);margin-bottom:8px;">// SAFE ACCESS POINT DETECTED</h3>
+    <p style="color:var(--text-gray);">You have breached a sector safehouse. Select a protocol to execute:</p>
+    <div class="draft-options">
+      <div class="draft-option" onclick="window.triggerSafehouseOption('heal')">
+        <h4 style="color:var(--green-glow);">Execute System Diagnostics (Heal 40 HP)</h4>
+      </div>
+      <div class="draft-option" onclick="window.triggerSafehouseOption('upgrade')">
+        <h4 style="color:var(--purple-glow);">Patch System Modules (Choose 1 Upgrade)</h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ NARRATIVE POPUP (global, always present, shown via JS) ═══ -->
+  <div id="narrative-popup"></div>
+
+  <!-- Script initialization -->
+  <script type="module">
+    import { GameEngine } from './js/surveillance-rpg/game.js';
+    import { CLASSES, ENEMIES, UPGRADES, PERMANENT_UPGRADES, LORE } from './js/surveillance-rpg/entities.js';
+    import {
+      drawGunner, drawMuscleman, drawOperative, drawDuelist, drawHacker,
+      drawQuadRotor, drawDogMech, drawSecurityCamera, drawSafehouseIcon, drawTrapIcon, drawServerNodeIcon
+    } from './js/surveillance-rpg/vector-art.js';
+    import { BootScene, BoardScene, CombatScene } from './js/surveillance-rpg/phaser-game.js';
+
+    const engine = new GameEngine();
+    let animTime = 0;
+
+    // ── DOM refs ──
+    const classGrid = document.getElementById('classGrid');
+    const classSelectScreen = document.getElementById('classSelectScreen');
+    const boardScreen = document.getElementById('boardScreen');
+    const rollBtn = document.getElementById('rollBtn');
+    const systemLog = document.getElementById('systemLog');
+    const gameCanvas = document.getElementById('gameCanvas');
+
+    const hudSpec = document.getElementById('hudSpec');
+    const hudLevel = document.getElementById('hudLevel');
+    const hudCredits = document.getElementById('hudCredits');
+    const levelLabel = document.getElementById('levelLabel');
+    const hpBarFill = document.getElementById('hpBarFill');
+    const hpBarText = document.getElementById('hpBarText');
+    const xpBarFill = document.getElementById('xpBarFill');
+    const xpBarText = document.getElementById('xpBarText');
+
+    const draftOverlay = document.getElementById('draftOverlay');
+    const draftOptions = document.getElementById('draftOptions');
+    const safehouseOverlay = document.getElementById('safehouseOverlay');
+
+    // New UI refs
+    const abilityPanel = document.getElementById('ability-panel');
+    const abilityList = document.getElementById('ability-list');
+    const combatLog = document.getElementById('combat-log');
+    const narrativePopup = document.getElementById('narrative-popup');
+    const shopDynamicList = document.getElementById('shopDynamicList');
+
+    const hudHPBar = document.getElementById('hpBar');
+    const hudHPText = document.getElementById('hpText');
+    const hudXPText = document.getElementById('hudXPText');
+
+    // ── Shop: bind existing buttons ──
+    document.getElementById('buyNanoArmor').addEventListener('click', () => {
+      if (engine.buyPermanentUpgrade('nano_armor', 150)) {
+        addLogEntry("System Upgrade Purchased: Nano-Alloy Armor. HP permanently boosted.");
+        updateHUD(); renderShopDynamic();
+      } else addLogEntry("Insufficient credits or upgrade already acquired.");
+    });
+    document.getElementById('buyStimBoost').addEventListener('click', () => {
+      if (engine.buyPermanentUpgrade('stim_boost', 200)) {
+        addLogEntry("System Upgrade Purchased: Stim Injectors. Speed permanently boosted.");
+        updateHUD(); renderShopDynamic();
+      } else addLogEntry("Insufficient credits or upgrade already acquired.");
+    });
+    document.getElementById('buyWeaponTuning').addEventListener('click', () => {
+      if (engine.buyPermanentUpgrade('weapon_tuning', 200)) {
+        addLogEntry("System Upgrade Purchased: Weapon Tuning. Attack power permanently boosted.");
+        updateHUD(); renderShopDynamic();
+      } else addLogEntry("Insufficient credits or upgrade already acquired.");
+    });
+    document.getElementById('unlockHacker').addEventListener('click', () => {
+      if (engine.unlockClass('hacker', 400)) {
+        addLogEntry("Netrunner Archon Specification Unlocked!");
+        renderClassCards();
+        updateHUD();
+      } else addLogEntry("Insufficient credits or class already unlocked.");
+    });
+
+    // ── Menu buttons ──
+    const startNewRunBtn = document.getElementById('startNewRunBtn');
+    const saveSystemStateBtn = document.getElementById('saveSystemStateBtn');
+    const loadSystemStateBtn = document.getElementById('loadSystemStateBtn');
+    const mainMenuScreen = document.getElementById('mainMenuScreen');
+    const gameplayContainer = document.getElementById('gameplayContainer');
+
+    startNewRunBtn.addEventListener('click', () => {
+      mainMenuScreen.style.display = 'none';
+      gameplayContainer.style.display = 'flex';
+      classSelectScreen.classList.add('active');
+    });
+
+    saveSystemStateBtn.addEventListener('click', () => {
+      const state = {
+        credits: engine.credits,
+        perm: engine.permanentUpgrades,
+        classes: engine.unlockedClasses,
+        sector: engine.activeSector
+      };
+      localStorage.setItem('aegis_save_state', JSON.stringify(state));
+      addLogEntry("Backup Infiltrator Log recorded: Save State written successfully.");
+      alert("Intrusion state saved to local buffer.");
+    });
+
+    loadSystemStateBtn.addEventListener('click', () => {
+      const saved = localStorage.getItem('aegis_save_state');
+      if (saved) {
+        const state = JSON.parse(saved);
+        engine.credits = state.credits;
+        engine.permanentUpgrades = state.perm;
+        engine.unlockedClasses = state.classes;
+        engine.activeSector = state.sector;
+        localStorage.setItem('aegis_credits', engine.credits.toString());
+        localStorage.setItem('aegis_perm_upgrades', JSON.stringify(engine.permanentUpgrades));
+        localStorage.setItem('aegis_unlocked_classes', JSON.stringify(engine.unlockedClasses));
+        addLogEntry("Backup Infiltrator Log restored: Save State loaded.");
+        renderClassCards();
+        updateHUD();
+        mainMenuScreen.style.display = 'none';
+        gameplayContainer.style.display = 'flex';
+        classSelectScreen.classList.add('active');
+      } else alert("No local system restore buffer located.");
+    });
+
+    // ── Render class cards ──
+    function renderClassCards() {
+      classGrid.innerHTML = '';
+      Object.keys(CLASSES).forEach(key => {
+        const cls = CLASSES[key];
+        const isUnlocked = engine.unlockedClasses.includes(key);
+        const card = document.createElement('div');
+        card.className = 'class-card';
+        card.innerHTML = `
+          <h3 style="color:${cls.color}">${cls.name}</h3>
+          <p style="font-size:0.85rem;color:var(--text-gray);margin-top:8px;">${cls.description}</p>
+          <button class="btn" style="margin-top:12px;padding:6px 12px;font-size:0.85rem;" ${isUnlocked ? '' : 'disabled'}>${isUnlocked ? 'Select Spec' : 'Locked'}</button>
+        `;
+        if (isUnlocked) {
+          card.querySelector('button').addEventListener('click', () => {
+            engine.initPlayer(key);
+            classSelectScreen.classList.remove('active');
+            boardScreen.classList.add('active');
+            addLogEntry("YEAR 2142. NEO-TOKYO / NEW LONDON.");
+            addLogEntry("You are jacked into the Aegis Surveillance Grid — an omnipresent neural link monitoring all citizens.");
+            addLogEntry("Access authorized. Initiate signal sweep. Threat response active.");
+            updateHUD();
+          });
+        }
+        classGrid.appendChild(card);
+      });
+    }
+
+    // ── Safehouse callback ──
+    window.triggerSafehouseOption = function(option) {
+      if (option === 'heal') {
+        engine.player.hp = Math.min(engine.player.hpMax, engine.player.hp + 40);
+        addLogEntry("Executing system diagnostics. Restored 40 HP.");
+        engine.gameState = 'board';
+      } else engine.startUpgradeDraft();
+      safehouseOverlay.style.display = 'none';
+      updateHUD();
+    };
+
+    // ── Dynamic shop items ──
+    function renderShopDynamic() {
+      shopDynamicList.innerHTML = '';
+      PERMANENT_UPGRADES.forEach(u => {
+        if (engine.permanentUpgrades.includes(u.id)) return;
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a293d;padding-bottom:6px;';
+        row.innerHTML = `
+          <span style="color:var(--text-gray);">${u.name} (${u.desc})</span>
+          <button class="btn" style="padding:4px 8px;font-size:0.72rem;" id="shop-${u.id}">Buy [${u.cost}c]</button>
+        `;
+        row.querySelector(`#shop-${u.id}`).addEventListener('click', () => {
+          if (engine.buyPermanentUpgrade(u.id, u.cost)) {
+            addLogEntry(`System Upgrade: ${u.name}. ${u.desc}`);
+            updateHUD(); renderShopDynamic();
+          } else addLogEntry("Insufficient credits or already purchased.");
+        });
+        shopDynamicList.appendChild(row);
+      });
+      UPGRADES.forEach(u => {
+        if (engine.player && engine.player.upgrades && engine.player.upgrades.includes(u.id)) return;
+        // Only show runtime upgrades on board (not during active combat)
+        if (engine.gameState !== 'board') return;
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a293d;padding-bottom:6px;';
+        row.innerHTML = `
+          <span style="color:var(--text-gray);">${u.name} — ${u.desc}</span>
+          <button class="btn" style="padding:4px 8px;font-size:0.72rem;" id="shop-${u.id}">Buy [50c]</button>
+        `;
+        row.querySelector(`#shop-${u.id}`).addEventListener('click', () => {
+          if (engine.credits >= 50 && (!engine.player || !engine.player.upgrades || !engine.player.upgrades.includes(u.id))) {
+            engine.credits -= 50;
+            engine.player.credits = engine.credits;
+            u.effect(engine.player);
+            addLogEntry(`Upgrade acquired: ${u.name}`);
+            updateHUD(); renderShopDynamic();
+          } else addLogEntry("Insufficient credits or already acquired.");
+        });
+        shopDynamicList.appendChild(row);
+      });
+    }
+
+    // ── Helpers ──
+    function addLogEntry(text) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerText = `> ${text}`;
+      systemLog.appendChild(entry);
+      systemLog.scrollTop = systemLog.scrollHeight;
+      // Also add to combat log if in combat
+      if (engine.gameState === 'combat') {
+        combatLog.appendChild(entry);
+        combatLog.scrollTop = combatLog.scrollHeight;
+      }
+    }
+
+    function updateHUD() {
+      hudCredits.innerText = `${engine.credits}c`;
+      if (!engine.player) return;
+      hudSpec.innerText = engine.player.name;
+      hudSpec.style.color = engine.player.color;
+      hudLevel.innerText = `Level ${engine.player.level} (Sector ${engine.activeSector})`;
+      updateLevelBar(engine.player.level, engine.player.xp, engine.player.xpNeeded, engine.player.hp, engine.player.hpMax, engine.credits);
+    }
+
+    // ═══════════════════════════════════════════
+    //  GLOBAL WINDOW FUNCTIONS (for engine integration)
+    // ═══════════════════════════════════════════
+
+    window.updateAbilityPanel = function(abilities, cooldowns) {
+      abilityList.innerHTML = '';
+      if (!abilities || abilities.length === 0) return;
+      abilities.forEach((ab, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'ability-btn' + (ab.onCooldown ? ' on-cooldown' : '');
+        btn.dataset.index = i;
+        const cdLabel = ab.onCooldown ? `${ab.cooldownLeft}t` : 'READY';
+        const cdClass = ab.onCooldown ? 'on-cd' : 'ready';
+        btn.innerHTML = `
+          <span class="ability-name">${ab.name}</span>
+          <span class="cooldown-badge ${cdClass}">[ ${cdLabel} ]</span>
+        `;
+        btn.setAttribute('data-tooltip', ab.desc);
+        abilityList.appendChild(btn);
+      });
+    };
+
+    window.clearAbilityPanel = function() {
+      abilityList.innerHTML = '';
+      combatLog.innerHTML = '';
+    };
+
+    window.showNarrativePopup = function(data) {
+      if (!data) return;
+      const popup = narrativePopup;
+      let choicesHTML = '';
+      if (data.choices && data.choices.length > 0) {
+        choicesHTML = data.choices.map((c, i) => `
+          <button class="narrative-choice-btn" data-index="${i}">
+            <span class="choice-label">${c.title}</span>
+            <span class="choice-desc">${c.desc}</span>
+            <span class="choice-effect">${c.effect}</span>
+          </button>
+        `).join('');
+      }
+      let loreHTML = '';
+      if (data.lore && data.lore.text) {
+        loreHTML = `<div class="narrative-lore">${data.lore.text}</div>`;
+      }
+      popup.innerHTML = `
+        <div class="narrative-backdrop">
+          <div class="narrative-content">
+            <div class="narrative-title">${data.title}</div>
+            <div class="narrative-desc">${data.desc || ''}</div>
+            ${loreHTML}
+            <div class="narrative-choices">${choicesHTML}</div>
+            ${choicesHTML ? '' : '<div class="narrative-dismiss"><button class="btn" onclick="window.hideNarrativePopup();">ACKNOWLEDGE</button></div>'}
+          </div>
+        </div>
+      `;
+      popup.style.display = 'block';
+    };
+
+    window.hideNarrativePopup = function() {
+      narrativePopup.style.display = 'none';
+      narrativePopup.innerHTML = '';
+    };
+
+    window.updateLevelBar = function(level, xp, xpNeeded, hp, hpMax, credits) {
+      const hpPct = Math.max(0, Math.min(100, (hp / hpMax) * 100));
+      const xpPct = Math.max(0, Math.min(100, (xp / xpNeeded) * 100));
+      levelLabel.textContent = `LVL ${level}`;
+      hudCredits.textContent = `${credits}c`;
+      hpBarFill.style.width = `${hpPct}%`;
+      hpBarText.textContent = `HP ${hp} / ${hpMax}`;
+      xpBarFill.style.width = `${xpPct}%`;
+      xpBarText.textContent = `XP ${xp} / ${xpNeeded}`;
+    };
+
+    // ═══════════════════════════════════════════
+
+    renderClassCards();
+    updateHUD();
+
+    // ── Dice roll ──
+    rollBtn.addEventListener('click', () => {
+      if (engine.isRolling) return;
+      addLogEntry('Initiating sector sweep jump...');
+      engine.rollDice();
+      updateHUD();
+    });
+
+    // ── Game loop / state sync ──
+    let lastNarrativeTitle = '';
+    setInterval(() => {
+      // Ability panel — only visible during combat
+      if (engine.gameState === 'combat' && engine.player) {
+        if (!abilityPanel.classList.contains('visible')) {
+          abilityPanel.classList.add('visible');
+        }
+        window.updateAbilityPanel(engine.getAvailableAbilities(), engine.player._cooldowns);
+      } else {
+        if (abilityPanel.classList.contains('visible')) {
+          abilityPanel.classList.remove('visible');
+          window.clearAbilityPanel();
+        }
+      }
+
+      // Upgrade draft overlay
+      if (engine.gameState === 'upgrade_draft') {
+        draftOverlay.style.display = 'block';
+        draftOverlay.style.position = 'fixed';
+        draftOverlay.style.top = '20%';
+        draftOverlay.style.left = '50%';
+        draftOverlay.style.transform = 'translateX(-50%)';
+        draftOverlay.style.zIndex = '9999';
+        draftOverlay.style.boxShadow = '0 0 30px rgba(176, 38, 255, 0.4)';
+        if (draftOptions.children.length === 0) {
+          draftOptions.innerHTML = '';
+          engine.draftChoices.forEach(upgrade => {
+            const opt = document.createElement('div');
+            opt.className = 'draft-option';
+            opt.innerHTML = `<h4 style="color:var(--purple-glow);">${upgrade.name}</h4><p style="font-size:0.85rem;color:var(--text-gray);margin-top:5px;">${upgrade.desc || upgrade.description}</p>`;
+            opt.addEventListener('click', () => {
+              engine.selectUpgrade(upgrade);
+              draftOverlay.style.display = 'none';
+              draftOptions.innerHTML = '';
+              addLogEntry(`Acquired Module: ${upgrade.name}`);
+              updateHUD(); renderShopDynamic();
+            });
+            draftOptions.appendChild(opt);
+          });
+        }
+      } else {
+        draftOverlay.style.display = 'none';
+      }
+
+      // Safehouse overlay
+      if (engine.gameState === 'safehouse') {
+        safehouseOverlay.style.display = 'block';
+        safehouseOverlay.style.position = 'fixed';
+        safehouseOverlay.style.top = '20%';
+        safehouseOverlay.style.left = '50%';
+        safehouseOverlay.style.transform = 'translateX(-50%)';
+        safehouseOverlay.style.zIndex = '9999';
+        safehouseOverlay.style.boxShadow = '0 0 30px rgba(57, 255, 20, 0.4)';
+      } else {
+        safehouseOverlay.style.display = 'none';
+      }
+
+      // Narrative popup sync
+      if (engine.narrativePopup && engine.narrativePopup.title) {
+        const title = engine.narrativePopup.title;
+        if (title !== lastNarrativeTitle) {
+          lastNarrativeTitle = title;
+          const np = engine.narrativePopup;
+          const choices = np.choices || [];
+          window.showNarrativePopup({
+            title: np.title,
+            desc: np.text,
+            lore: (np.type === 'combat' || np.type === 'start') ? LORE.loreEntries[Math.floor(Math.random() * LORE.loreEntries.length)] : undefined,
+            choices: choices.map(c => ({
+              title: c.label,
+              desc: c.desc,
+              effect: `Action: ${c.action || 'none'}`
+            }))
+          });
+        }
+      } else if (!engine.narrativePopup) {
+        lastNarrativeTitle = '';
+        window.hideNarrativePopup();
+      }
+
+      // Combat log sync
+      if (engine.gameState === 'combat' && engine.battleLog && engine.battleLog.length > 0) {
+        const nextLog = engine.battleLog.shift();
+        addLogEntry(nextLog);
+        updateHUD();
+      }
+    }, 100);
+
+    // ── Event delegation for ability buttons ──
+    abilityList.addEventListener('click', (e) => {
+      const btn = e.target.closest('.ability-btn');
+      if (!btn || btn.classList.contains('on-cooldown')) return;
+      const idx = parseInt(btn.dataset.index);
+      if (isNaN(idx)) return;
+      engine.useAbility(idx);
+      window.updateAbilityPanel(engine.getAvailableAbilities(), engine.player && engine.player._cooldowns);
+      updateHUD();
+    });
+
+    // ── Event delegation for narrative choices ──
+    narrativePopup.addEventListener('click', (e) => {
+      const btn = e.target.closest('.narrative-choice-btn');
+      if (btn) {
+        const idx = parseInt(btn.dataset.index);
+        engine.selectNarrativeChoice(idx);
+        updateHUD();
+        window.hideNarrativePopup();
+      }
+    });
+
+    // ── Load saved state ──
+    const savedCredits = localStorage.getItem('aegis_credits');
+    if (savedCredits) engine.credits = parseInt(savedCredits);
+
+    // ── Phaser game config ──
+    const config = {
+      type: Phaser.CANVAS,
+      width: 800,
+      height: 400,
+      canvas: gameCanvas,
+      physics: { default: 'arcade' },
+      scene: [BootScene, BoardScene, CombatScene]
+    };
+
+    const originalInit = engine.initPlayer;
+    engine.initPlayer = function(classKey) {
+      originalInit.call(engine, classKey);
+      const game = new Phaser.Game(config);
+      game.scene.start('BootScene', { engine: engine });
+    };
+  </script>
+
+</body>
+</html>

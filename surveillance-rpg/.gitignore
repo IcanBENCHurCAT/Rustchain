@@ -1,0 +1,11 @@
+*.png
+*.gif
+*.jpg
+*.jpeg
+assets/
+sims_cache/
+.openclaw/
+.git/
+node_modules/
+.system_generated/
+*.log
