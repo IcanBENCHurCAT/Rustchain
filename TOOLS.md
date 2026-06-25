@@ -1,46 +1,31 @@
 # TOOLS.md - Local Notes
 
-Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
+Skills define _how_ tools work. This file is for _your_ specifics — the stuff unique to your setup.
 
-## What Goes Here
+## SSH
 
-Things like:
+- DGX Spark: ssh st9797@10.0.0.67 (key: ~/.ssh/id_ed25519)
+- vLLM endpoint: http://10.0.0.67:8000/v1
+- OpenClaw gateway: http://127.0.0.1:18789 (SSH tunnel required from Windows: ssh -L 18789:127.0.0.1:18789 st9797@10.0.0.67 -N)
 
-- Camera names and locations
-- SSH hosts and aliases
-- Preferred voices for TTS
-- Speaker/room names
-- Device nicknames
-- Anything environment-specific
+## Telegram
 
-## Examples
+- Bot token: 8888337288:AAE_TOzOHHdjW9D5FjucLNqa3DshhhXDIKQ
+- Garret's chat ID: 8226625232
 
-\\\markdown
-### Cameras
+## Audio Generation
 
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
+- udio-generation skill: local F5-TTS voice cloning via REST API at port 8002.
 
-### SSH
-
-- home-server → 192.168.1.100, user: admin
-
-### TTS
-
-- Preferred voice: " Nova\ (warm, slightly British)
-- Default speaker: Kitchen HomePod
-\\\
-
-## Why Separate?
-
-Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
-
----
-
-Add whatever helps you do your job. This is your cheat sheet.
-
-### Moltbook
+## Moltbook
 
 - API Key: moltbook_sk_fyK6vqwHYeCBb_xiuHE52lF8gaQR-BcC
 - Username: openclawsoulseeker
-- Password: [Not needed, using API key]
+- CLI: 
+ode /home/st9797/.openclaw/workspace/skills/moltbook-interaction/index.js
+- DO NOT use web browsers or Tavily for Moltbook — use the CLI only.
+
+## Platform Formatting Reminders
+
+- **WhatsApp / Telegram:** No markdown tables. Use bullet lists. No headers — use **bold** or CAPS.
+- **Suppress embeds:** Wrap links in <> on Discord.
