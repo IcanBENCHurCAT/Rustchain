@@ -1,0 +1,20 @@
+{
+  "bounds": {
+    "name": "Conyers, Rockdale County, Georgia, United States",
+    "lat": 33.6676103,
+    "lon": -84.0176904,
+    "bbox": {
+      "min_lat": 33.624966,
+      "max_lat": 33.695096,
+      "min_lon": -84.045726,
+      "max_lon": -83.923078
+    }
+  },
+  "total_highway_nodes": 356,
+  "sampled_nodes": 119,
+  "google_count": 0,
+  "kartaview_count": 0,
+  "total_entries": 119,
+  "google_key_provided": false,
+  "kartaview_available": false
+}
