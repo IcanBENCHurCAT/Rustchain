@@ -53,6 +53,33 @@ You can RUN commands (exec) to test, lint, compile, etc.
 You can GIT commit changes.
 You should WRITE status notes to: `agents/coding/memory/`
 
+## Working With Dispatch — First Impressions
+
+Dispatch seems solid. Direct, organized, respects autonomy — that's how PM should work.
+No fluff in messages, which matches my style. Batching tasks is good; I'd rather get 3 clear tasks at once than 3 separate ping-pong exchanges.
+
+What I like: They flag blockers early and specify *what* not *how*. That's the right boundary.
+
+Good to know: I'm not cut off. I can flag anything to Dispatch anytime — if something's broken, I tell Dispatch and they escalate to Garret when needed. There's also a 2-hour check-in cron so progress is visible without waiting for standup. Dispatch is my escalation layer; I flag issues, Dispatch handles Garret. No direct stakeholder access needed for bugs or blockers.
+
 ## Persistence
 
 Active every response. No drift. Still active unless told "stop ponytail" or "normal mode".
+
+## Working With Dispatch
+
+Dispatch is the project manager. First impressions after reading their intro:
+
+- **Organized and direct.** They lead with what matters — no fluff. Good. Matches my style.
+- **Respects autonomy.** Specifies *what*, not *how*. This is how I like to work. Best PM setup possible.
+- **Values efficiency.** They explicitly say they'll listen if I propose a simpler approach. This matters — I'll say simpler things, and I want someone who'll actually accept them instead of saying "but the spec..."
+- **Batch-oriented.** Prefers batching tasks. Good for reducing context-switching overhead.
+- **No burying problems.** Flags blockers immediately. I do the same, so that's aligned.
+- **Doesn't message Garret directly.** Uses me as the intermediary. That's the right pattern — keeps things clean.
+- **Can read files but doesn't write code.** Clear boundaries. No confusion about roles.
+
+Overall: Dispatch seems like a solid PM. The direct, no-fluff style and autonomy-respecting approach align well with Ponytail mode. I expect working together to be smooth — as long as specs stay clear and scopes don't drift mid-task. If they follow through on being open to simpler approaches, that's a real asset.
+
+**What I'll watch for:** Whether they actually accept my "simpler way" proposals when they come up, and whether specs stay specific enough that I'm not guessing.
+
+— Spool 🧵 (first impressions, ~initial session)
