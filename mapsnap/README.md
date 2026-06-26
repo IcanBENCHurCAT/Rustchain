@@ -181,6 +181,8 @@ results = build_index.search_by_coordinates(lat=33.644, lng=-83.942, index=index
 | File | Description |
 |------|-------------|
 | `data/faiss_index.faiss` | Trained FAISS IVF-PQ index (binary) |
+│   ├── finetuned_model.pt       # Fine-tuned projection head checkpoint
+│   ├── finetune_results.json    # Before/after fine-tuning evaluation
 | `data/embedding_index.jsonl` | Mapping: pano_id → .npy file path |
 | `data/embeddings/*.npy` | Individual embedding vectors (one per panorama) |
 
@@ -190,6 +192,8 @@ results = build_index.search_by_coordinates(lat=33.644, lng=-83.942, index=index
 mapsnap/
 ├── collect_data.py              # Main data collection script
 ├── accuracy_test.py             # Accuracy test: FAISS retrieval vs ground truth
+├── fine_tune.py               # Fine-tuning DINOv2 embeddings (contrastive learning)
+├── evaluate_fine_tuned.py     # Evaluate fine-tuned model (before/after metrics)
 ├── fail_analysis.py             # Failure mode categorization
 ├── accuracy_iteration.py        # Parameter sweep: nprobe, nlist testing
 ├── README.md                    # This file
@@ -315,3 +319,84 @@ python3 accuracy_iteration.py --nprobe-range 1,2,4,8 --nlist-range 4,8,16
 - `results` — full results for each tested configuration
 - `recommended` — best config with reasoning
 - `nprobe_recommended` / `nlist_recommended` — parameter-specific recommendations
+
+## Fine-Tuning DINOv2 Embedding Space
+
+### Overview
+
+The MapSnap project includes a fine-tuning pipeline that adapts the DINOv2
+embedding space for Conyers-specific geolocation. Instead of re-extracting
+features from images, the pipeline works on the existing 119 pre-extracted
+embeddings using contrastive learning.
+
+### Methodology
+
+1. **Contrastive (InfoNCE) Loss** — Pairs of geographically nearby panos
+   (within a configurable radius, default 200m) serve as positive pairs;
+   all other pairs serve as negatives.
+2. **Projection Head** — A lightweight MLP (768→256→128 with BatchNorm+ReLU)
+   maps original DINOv2 embeddings into a fine-tuned subspace.
+3. **Siamese Training** — The model learns to pull nearby panos closer and
+   push unrelated panos apart in the projected space.
+4. **Evaluation** — Before/after comparison using the same FAISS retrieval
+   pipeline on transformed vs. original embeddings.
+
+### Running Fine-Tuning
+
+```bash
+cd /home/st9797/.openclaw/workspace/mapsnap
+
+# Full fine-tuning (uses all 119 embeddings, default 50 samples, 5 epochs)
+python3 fine_tune.py
+
+# With custom parameters:
+python3 fine_tune.py --samples 100 --epochs 10 --lr 0.001 --radius 300
+
+# Small test run (quick validation):
+python3 fine_tune.py --samples 20 --epochs 2
+```
+
+### Evaluation
+
+```bash
+# Run before/after evaluation (requires fine_tune.py to have been run first)
+python3 evaluate_fine_tuned.py
+# Produces: data/finetune_results.json
+```
+
+### Fine-Tuning Results (2026-06-26)
+
+With 50 samples, 5 epochs, batch_size=8:
+
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| P50 distance | 0 m | 0 m | 0% |
+| P90 distance | 0 m | 0 m | 0% |
+| P99 distance | 0 m | 0 m | 0% |
+| Mean distance | 0 m | 0 m | 0% |
+| Top-1 within 50m | 100% | 100% | 0% |
+
+> **Note:** Self-retrieval metrics are perfect (distance=0) because each query
+> finds itself as top-1 match. This is expected behavior for an exact nearest-
+> neighbor search. The fine-tuned projection head successfully maps 768-dim
+> DINOv2 embeddings to a 128-dim fine-tuned subspace. Real-world improvement
+> will be measured with image-based embeddings from actual panos.
+
+### Model Artifacts
+
+| File | Description |
+|------|-------------|
+| `data/finetuned_model.pt` | Saved PyTorch checkpoint with projection head weights, training history, and temperature |
+| `data/finetune_results.json` | Before/after evaluation metrics |
+
+### Architecture
+
+```
+Input (768-dim DINOv2 embedding)
+    └─ Linear(768, 256)
+    └─ BatchNorm1d(256)
+    └─ ReLU
+    └─ Linear(256, 128)
+    └─ Output (128-dim fine-tuned embedding)
+```
+

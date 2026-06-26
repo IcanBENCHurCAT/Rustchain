@@ -1,0 +1,29 @@
+{
+  "before_finetune": {
+    "p50_distance_m": 0.0,
+    "p90_distance_m": 0.0,
+    "p99_distance_m": 0.0,
+    "mean_distance_m": 0.0,
+    "top1_within_50m": 1.0,
+    "top1_within_100m": 1.0,
+    "top1_within_500m": 1.0
+  },
+  "after_finetune": {
+    "p50_distance_m": 0.0,
+    "p90_distance_m": 0.0,
+    "p99_distance_m": 0.0,
+    "mean_distance_m": 0.0,
+    "top1_within_50m": 1.0,
+    "top1_within_100m": 1.0,
+    "top1_within_500m": 1.0
+  },
+  "improvement": {
+    "p50_distance_m_improvement_pct": 0,
+    "p90_distance_m_improvement_pct": 0,
+    "p99_distance_m_improvement_pct": 0,
+    "mean_distance_m_improvement_pct": 0,
+    "top1_within_50m_improvement_pct": 0.0,
+    "top1_within_100m_improvement_pct": 0.0,
+    "top1_within_500m_improvement_pct": 0.0
+  }
+}
