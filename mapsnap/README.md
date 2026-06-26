@@ -196,6 +196,10 @@ mapsnap/
 ├── evaluate_fine_tuned.py     # Evaluate fine-tuned model (before/after metrics)
 ├── fail_analysis.py             # Failure mode categorization
 ├── accuracy_iteration.py        # Parameter sweep: nprobe, nlist testing
+├── app.py                       # FastAPI web service (geolocation API)
+├── requirements.txt             # Python dependencies
+├── Dockerfile                   # CloudRun deployment image
+├── run.sh                       # Startup script (local + CloudRun)
 ├── README.md                    # This file
 ├── data/
 │   ├── panorama_index.jsonl     # Main output: one entry per line
@@ -206,8 +210,137 @@ mapsnap/
 │   ├── failure_modes.json       # Failure mode analysis
 │   ├── parameter_recs.json      # Parameter sweep recommendations
 │   ├── .panorama_index.jsonl.tmp # Checkpoint (auto-managed)
+│   ├── finetuned_model.pt       # Fine-tuned projection head checkpoint
+│   ├── finetune_results.json    # Before/after fine-tuning evaluation
 │   └── embeddings/              # .npy embedding vectors (one per pano)
 │
+```
+
+## MapSnap API Service
+
+A FastAPI web service that accepts image uploads and returns geolocation results
+using the FAISS embedding index.
+
+### Quick Start (Local Dev)
+
+```bash
+cd /home/st9797/.openclaw/workspace/mapsnap
+pip install -r requirements.txt
+python3 app.py
+# Server starts at http://localhost:8080
+```
+
+### API Endpoints
+
+#### `POST /predict`
+
+Upload an image to get its geolocation.
+
+**Request:**
+- `Content-Type: multipart/form-data`
+- Field: `file` (image file — JPEG, PNG, etc., max 20 MB)
+
+**cURL example:**
+```bash
+curl -X POST http://localhost:8080/predict \
+  -F "file=@photo.jpg"
+```
+
+**Response (200 OK):**
+```json
+{
+  "pano_id": "5691a266dcb3",
+  "latitude": 33.6340883,
+  "longitude": -83.93211,
+  "confidence": 0.8523,
+  "distance": 0.8523,
+  "n_results": 10,
+  "top_k": [
+    {"pano_id": "5691a266dcb3", "lat": 33.6340883, "lng": -83.93211, "distance": 0.8523},
+    {"pano_id": "36f32589d39d", "lat": 33.6547362, "lng": -83.9245304, "distance": 0.7214}
+  ],
+  "streetview_url": "https://www.google.com/maps/@?api=1&map_action=pano&panoid=5691a266dcb3",
+  "mode": "dummy"
+}
+```
+
+**Response fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `pano_id` | string | Google Street View panorama ID |
+| `latitude` | float | GPS latitude of matched location |
+| `longitude` | float | GPS longitude of matched location |
+| `confidence` | float | Match confidence score (0-1) |
+| `distance` | float | Cosine distance to nearest neighbor |
+| `n_results` | int | Total results searched |
+| `top_k` | array | Top-5 nearest matches with details |
+| `streetview_url` | string | Google Maps Street View link |
+| `mode` | string | `"real"` (DINOv2) or `"dummy"` (fallback) |
+
+**Error responses:**
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid image format, empty file, or file too large |
+| 500 | Processing error (missing index, extraction failure) |
+
+#### `GET /health`
+
+Health check for monitoring and load balancer probes.
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "index_count": 119,
+  "faiss_loaded": true,
+  "finetuned_model": true,
+  "real_mode": false,
+  "version": "1.0.0"
+}
+```
+
+#### `GET /`
+
+Service info and available endpoints.
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `8080` | HTTP port (set automatically on CloudRun) |
+| `MAPSNAP_REAL_MODE` | `0` | Set to `1` to use DINOv2 instead of dummy features |
+| `MAPSNAP_NPROBE` | `4` | FAISS nprobe parameter (search accuracy vs speed) |
+
+### Deployment: Google Cloud Run
+
+```bash
+# Build and deploy
+gcloud builds submit --tag gcr.io/PROJECT_ID/mapsnap:latest
+
+gcloud run deploy mapsnap \
+  --image gcr.io/PROJECT_ID/mapsnap:latest \
+  --platform managed \
+  --region us-south1 \
+  --allow-unauthenticated \
+  --memory 512Mi \
+  --cpu 1 \
+  --min-instances 0 \
+  --max-instances 10
+```
+
+### Running the API
+
+```bash
+# Local development
+python3 app.py
+
+# Production with gunicorn
+gunicorn app:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8080 --workers 2
+
+# Using run.sh (auto-detects CloudRun)
+./run.sh
 ```
 
 ## Troubleshooting
