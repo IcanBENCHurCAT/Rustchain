@@ -1,0 +1,61 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# Conyers Tutor — Proxy Service Dockerfile
+# ═══════════════════════════════════════════════════════════════════════════
+# Node.js proxy that forwards requests to the Gemini API.
+# Handles session management, rate limiting, structured logging, and
+# streaming responses via SSE.
+#
+# Required environment variables:
+#   GEMINI_API_KEY       — Google AI Studio API key (optional; mock mode otherwise)
+#   CLOUDFLARE_TURNSTILE_SITE_KEY — Cloudflare Turnstile site key (optional)
+#
+# Usage (from workspace root):
+#   gcloud run deploy tutor-proxy \
+#     --platform managed \
+#     --region us-central1 \
+#     --source . \
+#     --docker-file Dockerfile.proxy \
+#     --set-env-vars GEMINI_API_KEY=your_key,CLOUDFLARE_TURNSTILE_SITE_KEY=your_key
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ── Stage 1: Build ──────────────────────────────────────────────────
+FROM node:20-slim AS builder
+
+WORKDIR /app
+
+# Copy proxy source
+COPY cybers-tutor-proxy/package*.json ./
+RUN npm ci
+
+COPY cybers-tutor-proxy/ ./
+RUN npm run build
+
+# ── Stage 2: Production ─────────────────────────────────────────────
+FROM node:20-slim AS production
+
+# Install only production deps
+RUN npm ci --only=production
+
+WORKDIR /app
+
+# Copy built output from builder
+COPY --from=builder /app/dist ./dist
+
+# Copy source for mock responses and any runtime dependencies
+COPY cybers-tutor-proxy/src/services/mockResponses.json ./dist/services/
+
+# Expose port 3001 (proxy listens on PORT env var, default 3001)
+EXPOSE 3001
+
+# Environment variables (set at deploy time via gcloud --set-env-vars)
+# GEMINI_API_KEY      — Google AI API key
+# CLOUDFLARE_TURNSTILE_SITE_KEY — Cloudflare Turnstile
+# PORT                — Listen port (default 3001)
+# NODE_ENV            — Environment (production)
+# DEV_MODE            — Enable mock responses (false in production)
+
+# Health check for Cloud Run
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget -qO- http://localhost:3001/health || exit 1
+
+CMD ["node", "dist/server.js"]

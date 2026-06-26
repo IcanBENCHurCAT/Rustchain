@@ -1,0 +1,48 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# Conyers Tutor — Frontend Dockerfile
+# ═══════════════════════════════════════════════════════════════════════════
+# Serves the Vite-built PWA static assets via Nginx.
+#
+# Usage (from workspace root):
+#   gcloud run deploy tutor-frontend \
+#     --platform managed \
+#     --region us-central1 \
+#     --source . \
+#     --docker-file Dockerfile.frontend \
+#     --set-env-vars VITE_PROXY_URL=https://tutor-proxy-xxxxx-uc.a.run.app
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ── Stage 1: Build (from pre-built dist, matching the source tree) ───
+FROM node:20-slim AS build
+
+WORKDIR /app
+
+# Copy source to build in case dist doesn't exist yet
+COPY cybers-tutor-frontend/package*.json ./cybers-tutor-frontend/
+RUN cd cybers-tutor-frontend && npm ci
+
+COPY cybers-tutor-frontend/ ./cybers-tutor-frontend/
+RUN cd cybers-tutor-frontend && npm run build
+
+# ── Stage 2: Production (Nginx serving static files) ─────────────────
+FROM nginx:1.27-alpine AS production
+
+# Remove default Nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy custom Nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built assets from build stage
+COPY --from=build /app/cybers-tutor-frontend/dist /usr/share/nginx/html
+
+# Create a health check endpoint
+RUN mkdir -p /usr/share/nginx/html && \
+    echo '{"status":"ok","service":"tutor-frontend"}' > /usr/share/nginx/html/health && \
+    echo '' >> /usr/share/nginx/html/health
+
+# Expose port 80 (Nginx default)
+EXPOSE 80
+
+# Start Nginx in the foreground (required for Docker/K8s)
+CMD ["nginx", "-g", "daemon off;"]
