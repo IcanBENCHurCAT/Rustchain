@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>MapSnap — Geolocation by Photo</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <h1>📍 MapSnap</h1>
+    <p class="subtitle">Take a photo &mdash; see where it was taken</p>
+  </header>
+
+  <!-- Main Content -->
+  <main class="app-main">
+
+    <!-- Camera / Upload Section -->
+    <section id="capture-section" class="card capture-card">
+      <h2>📸 Capture or Upload</h2>
+      <p class="hint">Use your camera or pick an image</p>
+
+      <div class="capture-actions">
+        <button id="btn-camera" class="btn btn-primary btn-capture">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          Open Camera
+        </button>
+        <button id="btn-upload" class="btn btn-secondary btn-upload">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload Photo
+        </button>
+      </div>
+
+      <!-- Hidden file input for camera & file picker -->
+      <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif" capture="environment" style="display:none">
+
+      <!-- Image preview (after capture/upload) -->
+      <div id="preview-container" class="preview-container hidden">
+        <div id="preview-label" class="preview-label">Preview</div>
+        <img id="preview-image" src="" alt="Preview of uploaded image">
+        <button id="btn-retry-preview" class="btn-icon" title="Remove image">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Upload Progress -->
+    <div id="progress-bar" class="progress-bar hidden">
+      <div id="progress-fill" class="progress-fill"></div>
+      <span id="progress-text">Uploading...</span>
+    </div>
+
+    <!-- Loading / Processing State -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="spinner"></div>
+      <p>Analyzing your photo...</p>
+    </div>
+
+    <!-- Results Card -->
+    <section id="results-section" class="card results-card hidden">
+      <h2>🌍 Match Found</h2>
+
+      <!-- Confidence Score -->
+      <div id="confidence-badge" class="confidence-badge">
+        <span id="confidence-value">0%</span>
+        <span id="confidence-label">Confidence</span>
+      </div>
+
+      <!-- Top-K Results -->
+      <div id="top-k-results" class="top-k-results">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Map -->
+      <div id="map-container" class="map-container">
+        <div id="map" class="map"></div>
+      </div>
+
+      <!-- Street View Embed -->
+      <div id="streetview-container" class="streetview-container">
+        <h3>🏙️ Street View</h3>
+        <div id="streetview" class="streetview"></div>
+      </div>
+
+      <!-- Coordinates -->
+      <div id="coordinates" class="coordinates">
+        <span>Lat: <strong id="coord-lat">—</strong></span>
+        <span>Lon: <strong id="coord-lon">—</strong></span>
+      </div>
+
+      <!-- Try Again Button -->
+      <button id="btn-try-again" class="btn btn-primary btn-try-again">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Try Again
+      </button>
+    </section>
+
+    <!-- Error Card -->
+    <section id="error-section" class="card error-card hidden">
+      <h2>❌ Error</h2>
+      <p id="error-message">Something went wrong. Please try again.</p>
+      <button id="btn-error-retry" class="btn btn-primary">Try Again</button>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>Powered by AI geolocation</p>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+
+  <!-- App JS -->
+  <script src="app.js"></script>
+</body>
+</html>
