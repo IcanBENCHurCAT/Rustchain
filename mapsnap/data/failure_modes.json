@@ -1,0 +1,1264 @@
+{
+  "input_report": "/home/st9797/.openclaw/workspace/mapsnap/data/accuracy_report.json",
+  "total_queries": 119,
+  "successful_queries": 119,
+  "failure_modes": {
+    "excellent": {
+      "count": 119,
+      "percentage": 100.0,
+      "mean_dist_m": 0.0,
+      "max_dist_m": 0.0,
+      "min_dist_m": 0.0
+    },
+    "good": {
+      "count": 0,
+      "percentage": 0.0,
+      "mean_dist_m": 0,
+      "max_dist_m": 0,
+      "min_dist_m": 0
+    },
+    "fair": {
+      "count": 0,
+      "percentage": 0.0,
+      "mean_dist_m": 0,
+      "max_dist_m": 0,
+      "min_dist_m": 0
+    },
+    "interior": {
+      "count": 0,
+      "percentage": 0.0,
+      "mean_dist_m": 0,
+      "max_dist_m": 0,
+      "min_dist_m": 0
+    },
+    "road_segment": {
+      "count": 0,
+      "percentage": 0.0,
+      "mean_dist_m": 0,
+      "max_dist_m": 0,
+      "min_dist_m": 0
+    },
+    "clustering": {
+      "count": 0,
+      "percentage": 0.0,
+      "mean_dist_m": 0,
+      "max_dist_m": 0,
+      "min_dist_m": 0
+    },
+    "far_mismatch": {
+      "count": 0,
+      "percentage": 0.0,
+      "mean_dist_m": 0,
+      "max_dist_m": 0,
+      "min_dist_m": 0
+    },
+    "poor": {
+      "count": 0,
+      "percentage": 0.0,
+      "mean_dist_m": 0,
+      "max_dist_m": 0,
+      "min_dist_m": 0
+    }
+  },
+  "by_mode": {
+    "excellent": [
+      {
+        "pano_id": "5691a266dcb3",
+        "lat": 33.6340883,
+        "lng": -83.93211,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5609.3717,
+        "top10_avg_m": 5669.0995,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "36f32589d39d",
+        "lat": 33.6547362,
+        "lng": -83.9245304,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5670.7614,
+        "top10_avg_m": 5870.1585,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "9ad1f7b01ded",
+        "lat": 33.6695089,
+        "lng": -83.9698124,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4379.5369,
+        "top10_avg_m": 4541.7342,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "bf2aa091b490",
+        "lat": 33.655039,
+        "lng": -84.010456,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2613.4348,
+        "top10_avg_m": 3426.8852,
+        "highway": "motorway_junction",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "b55ddae78c19",
+        "lat": 33.6359071,
+        "lng": -83.9775117,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4122.1351,
+        "top10_avg_m": 4894.4262,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "9a941f11be65",
+        "lat": 33.665798,
+        "lng": -84.037688,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4047.506,
+        "top10_avg_m": 3694.6525,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "96eb842315c4",
+        "lat": 33.6341229,
+        "lng": -83.9769767,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3212.6365,
+        "top10_avg_m": 4253.61,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "482680db1f87",
+        "lat": 33.677611,
+        "lng": -83.970828,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3207.4636,
+        "top10_avg_m": 3229.0922,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "22c8b276c731",
+        "lat": 33.629922,
+        "lng": -84.039076,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5958.4586,
+        "top10_avg_m": 7117.6984,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "f0f2fd99d492",
+        "lat": 33.682418,
+        "lng": -83.962259,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4009.3692,
+        "top10_avg_m": 4955.4231,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "ec5595c6eec8",
+        "lat": 33.690913,
+        "lng": -84.017798,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2004.2151,
+        "top10_avg_m": 3089.2674,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "570dd1df3d8e",
+        "lat": 33.634352,
+        "lng": -83.998999,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3940.0266,
+        "top10_avg_m": 2979.4086,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "970eee53bc18",
+        "lat": 33.6368355,
+        "lng": -83.9852661,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3138.0935,
+        "top10_avg_m": 3556.4738,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "d35aa7c1a08c",
+        "lat": 33.6833604,
+        "lng": -84.0005553,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2761.2526,
+        "top10_avg_m": 3036.8176,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c748d52abb87",
+        "lat": 33.674308,
+        "lng": -83.970873,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3648.0655,
+        "top10_avg_m": 4175.3602,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "1f4fc42591dc",
+        "lat": 33.632621,
+        "lng": -83.955467,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5604.2865,
+        "top10_avg_m": 5637.3203,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "9f1805b5ac24",
+        "lat": 33.630732,
+        "lng": -84.044422,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4779.9931,
+        "top10_avg_m": 5696.4126,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "46f4599ede0f",
+        "lat": 33.642293,
+        "lng": -84.007919,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3108.6286,
+        "top10_avg_m": 3541.6368,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "cf80f4a7ee81",
+        "lat": 33.6748654,
+        "lng": -84.007946,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2333.8791,
+        "top10_avg_m": 2304.1277,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "d28dd0705476",
+        "lat": 33.684081,
+        "lng": -84.025611,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3761.6479,
+        "top10_avg_m": 4301.9894,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "3a9b79e4073e",
+        "lat": 33.6336442,
+        "lng": -84.0054145,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3963.4801,
+        "top10_avg_m": 3793.3676,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "cdef0caaa0c7",
+        "lat": 33.671965,
+        "lng": -84.013228,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3634.1999,
+        "top10_avg_m": 3254.1199,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "7130b8f2a241",
+        "lat": 33.6753588,
+        "lng": -84.018929,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4660.3557,
+        "top10_avg_m": 4654.9283,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "bc179a702092",
+        "lat": 33.627186,
+        "lng": -84.026322,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3084.627,
+        "top10_avg_m": 4045.4648,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "39cafbc4cb1e",
+        "lat": 33.627391,
+        "lng": -84.023909,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4751.109,
+        "top10_avg_m": 5534.5681,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "fe3b45634fc4",
+        "lat": 33.626202,
+        "lng": -84.032232,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5410.4028,
+        "top10_avg_m": 4666.1578,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "e8e5dfd6aa99",
+        "lat": 33.626311,
+        "lng": -84.026997,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4501.9301,
+        "top10_avg_m": 4450.4262,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "37f6ea671188",
+        "lat": 33.6693457,
+        "lng": -83.9869309,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2089.0636,
+        "top10_avg_m": 2631.496,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "88c646ced3ae",
+        "lat": 33.6704355,
+        "lng": -83.9700486,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3797.7996,
+        "top10_avg_m": 4099.0626,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c295ded38eaa",
+        "lat": 33.690705,
+        "lng": -84.014705,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2575.3572,
+        "top10_avg_m": 3724.9205,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "dadc9b401df6",
+        "lat": 33.684854,
+        "lng": -84.019422,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3976.8709,
+        "top10_avg_m": 4354.4544,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "36b96ba50459",
+        "lat": 33.6720549,
+        "lng": -83.9636301,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3615.4043,
+        "top10_avg_m": 3829.9609,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "76503d4e2216",
+        "lat": 33.685598,
+        "lng": -83.960951,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3110.2576,
+        "top10_avg_m": 3852.0391,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c0c0d0026e82",
+        "lat": 33.642731,
+        "lng": -84.008792,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3335.9972,
+        "top10_avg_m": 3614.3669,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "a56ebe6ac798",
+        "lat": 33.670577,
+        "lng": -84.036243,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4097.5289,
+        "top10_avg_m": 4484.3351,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "3604cc48a5d2",
+        "lat": 33.6640004,
+        "lng": -84.0048179,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3522.8443,
+        "top10_avg_m": 3525.9996,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "a2d55608c2c0",
+        "lat": 33.6684947,
+        "lng": -83.999837,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 1943.7972,
+        "top10_avg_m": 2751.6626,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "8f4394e68df7",
+        "lat": 33.643189,
+        "lng": -84.010541,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3360.026,
+        "top10_avg_m": 3251.5035,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "e9f4ebcaa5bd",
+        "lat": 33.6857448,
+        "lng": -83.9396239,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5423.6748,
+        "top10_avg_m": 5598.376,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c4d21c46c50c",
+        "lat": 33.628447,
+        "lng": -83.992821,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4217.544,
+        "top10_avg_m": 4108.8904,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c83126964976",
+        "lat": 33.633701,
+        "lng": -84.044098,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5373.9141,
+        "top10_avg_m": 5475.9712,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "4c189d698ae6",
+        "lat": 33.6653582,
+        "lng": -83.999112,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2887.9632,
+        "top10_avg_m": 3280.9493,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "9bf4274edd18",
+        "lat": 33.635375,
+        "lng": -84.041887,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4271.8325,
+        "top10_avg_m": 5303.1726,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "e7f6cf71fc88",
+        "lat": 33.6839109,
+        "lng": -84.0174708,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4326.6492,
+        "top10_avg_m": 3350.0969,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "2648d19050e3",
+        "lat": 33.625168,
+        "lng": -83.993432,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3032.1078,
+        "top10_avg_m": 3808.6202,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "fe808ae6b844",
+        "lat": 33.692017,
+        "lng": -83.9410081,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5291.7659,
+        "top10_avg_m": 5571.6142,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c85d1d69e347",
+        "lat": 33.6847066,
+        "lng": -83.9722611,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3533.6336,
+        "top10_avg_m": 3609.8674,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "33659c826c2e",
+        "lat": 33.6798214,
+        "lng": -83.974467,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4404.979,
+        "top10_avg_m": 5052.5883,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "90984f599f96",
+        "lat": 33.6799142,
+        "lng": -83.9734198,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3352.2532,
+        "top10_avg_m": 3132.7842,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "9fab3bcf06b3",
+        "lat": 33.6654476,
+        "lng": -84.0283084,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 6346.7271,
+        "top10_avg_m": 5141.8943,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "153326eaa67c",
+        "lat": 33.6251292,
+        "lng": -84.0245142,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3712.12,
+        "top10_avg_m": 5602.61,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "6884ace768e9",
+        "lat": 33.6253058,
+        "lng": -83.9864889,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4159.4908,
+        "top10_avg_m": 4107.823,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "8794a9168fe2",
+        "lat": 33.6275856,
+        "lng": -83.9891857,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3224.1832,
+        "top10_avg_m": 3808.9881,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "1f0573504adc",
+        "lat": 33.6285377,
+        "lng": -83.989114,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2883.2076,
+        "top10_avg_m": 3478.2382,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "26b45dfec8d5",
+        "lat": 33.6311158,
+        "lng": -83.9952901,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2841.1922,
+        "top10_avg_m": 3649.7976,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "99c3e3836f9d",
+        "lat": 33.6535265,
+        "lng": -84.0451018,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3918.27,
+        "top10_avg_m": 5425.3461,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "047731849571",
+        "lat": 33.6252782,
+        "lng": -83.9373599,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3647.0837,
+        "top10_avg_m": 5197.6068,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "35379eeaa1fa",
+        "lat": 33.6921564,
+        "lng": -83.9670295,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4287.1465,
+        "top10_avg_m": 5295.5582,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "2dd057e3d219",
+        "lat": 33.6934422,
+        "lng": -83.9726881,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4580.1683,
+        "top10_avg_m": 5942.9778,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "fcc94f54a057",
+        "lat": 33.6948987,
+        "lng": -83.9695654,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4961.643,
+        "top10_avg_m": 4606.618,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "aea88611d827",
+        "lat": 33.6866493,
+        "lng": -83.9690615,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3338.9908,
+        "top10_avg_m": 4915.5123,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "0786bfc0ede9",
+        "lat": 33.6871909,
+        "lng": -83.9700202,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3903.5165,
+        "top10_avg_m": 4891.409,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "3660dfd90280",
+        "lat": 33.6694678,
+        "lng": -83.9909301,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2709.8456,
+        "top10_avg_m": 3391.0808,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "ae5f243726af",
+        "lat": 33.6695676,
+        "lng": -83.9931712,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2438.5836,
+        "top10_avg_m": 2800.3433,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "0fcc32e942fc",
+        "lat": 33.6752256,
+        "lng": -83.9815893,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2690.5645,
+        "top10_avg_m": 2769.1409,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "25b7d721c2c2",
+        "lat": 33.6859399,
+        "lng": -84.0003824,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2102.948,
+        "top10_avg_m": 3248.0065,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "85cdf870553f",
+        "lat": 33.6387836,
+        "lng": -83.9678986,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4640.7866,
+        "top10_avg_m": 4656.3988,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "5c79a2c1b5cc",
+        "lat": 33.6407152,
+        "lng": -83.9650832,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2063.5385,
+        "top10_avg_m": 3952.3204,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "16275dd173d3",
+        "lat": 33.6434354,
+        "lng": -83.9651035,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4342.7476,
+        "top10_avg_m": 4712.013,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "20abcc78b041",
+        "lat": 33.6494406,
+        "lng": -83.9602382,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2744.3508,
+        "top10_avg_m": 3889.5763,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "1d469eb24ef7",
+        "lat": 33.6816062,
+        "lng": -83.9945257,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2757.0572,
+        "top10_avg_m": 2895.3294,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "b34409ea6f8f",
+        "lat": 33.6390331,
+        "lng": -83.951805,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3115.4527,
+        "top10_avg_m": 4423.99,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "60c3da37095d",
+        "lat": 33.640966,
+        "lng": -83.946579,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4950.0861,
+        "top10_avg_m": 5335.1906,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "b27477cfdc35",
+        "lat": 33.6427404,
+        "lng": -83.9544047,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5401.5768,
+        "top10_avg_m": 5300.4358,
+        "highway": "turning_loop",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "41de96960122",
+        "lat": 33.643615,
+        "lng": -83.950166,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3500.0781,
+        "top10_avg_m": 4932.9983,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "67713b4e7583",
+        "lat": 33.645375,
+        "lng": -83.954459,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4368.3173,
+        "top10_avg_m": 4208.3873,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "0cb8f4e2327e",
+        "lat": 33.647125,
+        "lng": -83.949224,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4937.5803,
+        "top10_avg_m": 5254.8266,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "222e2c65c346",
+        "lat": 33.648736,
+        "lng": -83.944894,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4403.2593,
+        "top10_avg_m": 4585.1721,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "3cba14e88064",
+        "lat": 33.652586,
+        "lng": -83.940107,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4764.5543,
+        "top10_avg_m": 5424.7907,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c4256e5ca1ee",
+        "lat": 33.6298491,
+        "lng": -84.0146336,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 1906.672,
+        "top10_avg_m": 3086.1167,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "14e7ca21bf56",
+        "lat": 33.6894067,
+        "lng": -84.0313849,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2910.6365,
+        "top10_avg_m": 4735.8997,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "39065f343943",
+        "lat": 33.691584,
+        "lng": -84.0336086,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4197.08,
+        "top10_avg_m": 5440.9263,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "ccc4aa1626ed",
+        "lat": 33.6828961,
+        "lng": -83.9848165,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2805.1002,
+        "top10_avg_m": 3393.1369,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "17c802e0578b",
+        "lat": 33.656532,
+        "lng": -83.9674615,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3994.0586,
+        "top10_avg_m": 4058.8743,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "a787fb50ff3a",
+        "lat": 33.6728667,
+        "lng": -83.9692967,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2206.378,
+        "top10_avg_m": 3265.8325,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "0f7a8fcb5f10",
+        "lat": 33.6757238,
+        "lng": -84.0224528,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3482.649,
+        "top10_avg_m": 3844.3517,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "ff4d39431c82",
+        "lat": 33.6679776,
+        "lng": -83.9905208,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2761.3583,
+        "top10_avg_m": 2650.2579,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "4749930ff009",
+        "lat": 33.6481574,
+        "lng": -84.0059247,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2976.8167,
+        "top10_avg_m": 3303.6705,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "9f71cecfba40",
+        "lat": 33.6887964,
+        "lng": -83.9417676,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5052.0656,
+        "top10_avg_m": 5892.3777,
+        "highway": "turning_loop",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "a955f312ac07",
+        "lat": 33.645669,
+        "lng": -84.0049832,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3197.9139,
+        "top10_avg_m": 2903.3576,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "aa92d8d7d99f",
+        "lat": 33.6840363,
+        "lng": -83.9827101,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4136.0301,
+        "top10_avg_m": 4693.9849,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "998d25422b6e",
+        "lat": 33.6381183,
+        "lng": -84.0146723,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2272.7114,
+        "top10_avg_m": 3875.1077,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "6f091b02ad68",
+        "lat": 33.65408,
+        "lng": -84.0047647,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2624.5141,
+        "top10_avg_m": 3204.927,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "82883b9b2292",
+        "lat": 33.6539745,
+        "lng": -84.005122,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 1827.8083,
+        "top10_avg_m": 2793.3795,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c70e8ba2c803",
+        "lat": 33.6339172,
+        "lng": -84.014454,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4784.6143,
+        "top10_avg_m": 4712.7114,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "13e6c457cf71",
+        "lat": 33.6337069,
+        "lng": -84.0145459,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3106.3866,
+        "top10_avg_m": 4117.5738,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "f09c03f49390",
+        "lat": 33.6383702,
+        "lng": -84.0144883,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3643.4687,
+        "top10_avg_m": 4410.7931,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "9a91521196e2",
+        "lat": 33.6402524,
+        "lng": -84.0142737,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3659.5073,
+        "top10_avg_m": 3868.0708,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "53beeb1d137b",
+        "lat": 33.6425583,
+        "lng": -84.0143887,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2965.6598,
+        "top10_avg_m": 4185.8396,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "305cf51bba7e",
+        "lat": 33.6428621,
+        "lng": -84.0145632,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 1402.5364,
+        "top10_avg_m": 3658.5714,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "539969fac31c",
+        "lat": 33.6475398,
+        "lng": -84.0121883,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2854.4816,
+        "top10_avg_m": 3403.9972,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "8c03fe91e841",
+        "lat": 33.6498357,
+        "lng": -84.0099319,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3699.0589,
+        "top10_avg_m": 3578.3757,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "6b3f542be72c",
+        "lat": 33.6498097,
+        "lng": -84.0101191,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3297.2327,
+        "top10_avg_m": 4204.378,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "d24464eaf576",
+        "lat": 33.652033,
+        "lng": -84.0072933,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2734.2074,
+        "top10_avg_m": 3408.7897,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "d0c2f6173bb6",
+        "lat": 33.6551173,
+        "lng": -84.0034301,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2594.6286,
+        "top10_avg_m": 2701.5454,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "2efe6a282a45",
+        "lat": 33.6693735,
+        "lng": -83.9866591,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3513.3907,
+        "top10_avg_m": 3752.5649,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "4659753261a8",
+        "lat": 33.659378,
+        "lng": -83.999427,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3241.3055,
+        "top10_avg_m": 3613.2254,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "712ba87e06a7",
+        "lat": 33.6627222,
+        "lng": -83.9960249,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2043.26,
+        "top10_avg_m": 2813.7935,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "4c37fe24ff00",
+        "lat": 33.6579979,
+        "lng": -84.0011335,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2324.572,
+        "top10_avg_m": 2700.6809,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "cec27b1fb6e4",
+        "lat": 33.6725498,
+        "lng": -83.9817491,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2774.1918,
+        "top10_avg_m": 2811.3053,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "1025e1ab1b63",
+        "lat": 33.6721625,
+        "lng": -83.9819783,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2633.1463,
+        "top10_avg_m": 2449.0469,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "6a358e79e1fe",
+        "lat": 33.6782667,
+        "lng": -83.9753456,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 5009.3605,
+        "top10_avg_m": 4125.5,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "2ea261da8aaa",
+        "lat": 33.6890469,
+        "lng": -83.9618377,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3445.5041,
+        "top10_avg_m": 4420.3112,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "5519d3f4c345",
+        "lat": 33.6368517,
+        "lng": -84.0188992,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 3837.3598,
+        "top10_avg_m": 3675.3357,
+        "highway": "traffic_signals",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "a0d60a4bf09d",
+        "lat": 33.6769188,
+        "lng": -83.9846564,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2765.2854,
+        "top10_avg_m": 2835.2636,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "2ce47c6f0743",
+        "lat": 33.645106,
+        "lng": -83.9971416,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2845.449,
+        "top10_avg_m": 2788.5794,
+        "highway": "stop",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "c932670d54aa",
+        "lat": 33.628572,
+        "lng": -84.0228182,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 4992.2785,
+        "top10_avg_m": 5612.8583,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "0b9d0df442d3",
+        "lat": 33.6435941,
+        "lng": -83.984359,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2082.3639,
+        "top10_avg_m": 3370.7282,
+        "highway": "turning_circle",
+        "source": "overpass"
+      },
+      {
+        "pano_id": "357352aec218",
+        "lat": 33.6638774,
+        "lng": -84.0456373,
+        "top1_dist_m": 0.0,
+        "top5_avg_m": 2491.8637,
+        "top10_avg_m": 4529.9819,
+        "highway": "turning_circle",
+        "source": "overpass"
+      }
+    ],
+    "good": [],
+    "fair": [],
+    "interior": [],
+    "road_segment": [],
+    "clustering": [],
+    "far_mismatch": [],
+    "poor": []
+  }
+}

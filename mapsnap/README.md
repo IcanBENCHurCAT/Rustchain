@@ -189,12 +189,18 @@ results = build_index.search_by_coordinates(lat=33.644, lng=-83.942, index=index
 ```
 mapsnap/
 ├── collect_data.py              # Main data collection script
+├── accuracy_test.py             # Accuracy test: FAISS retrieval vs ground truth
+├── fail_analysis.py             # Failure mode categorization
+├── accuracy_iteration.py        # Parameter sweep: nprobe, nlist testing
 ├── README.md                    # This file
 ├── data/
 │   ├── panorama_index.jsonl     # Main output: one entry per line
 │   ├── collection_overview.json # Summary metadata
 │   ├── embedding_index.jsonl    # Pano ID → embedding path mapping
 │   ├── faiss_index.faiss        # Trained FAISS IVF-PQ index
+│   ├── accuracy_report.json     # Accuracy test results
+│   ├── failure_modes.json       # Failure mode analysis
+│   ├── parameter_recs.json      # Parameter sweep recommendations
 │   ├── .panorama_index.jsonl.tmp # Checkpoint (auto-managed)
 │   └── embeddings/              # .npy embedding vectors (one per pano)
 │
@@ -205,3 +211,107 @@ mapsnap/
 - **KartaView returns HTML**: The KartaView/Mapillary API may require authentication or has changed endpoints. The Overpass data still provides useful intersection coverage.
 - **Overpass times out**: The Overpass API has rate limits. The script retries automatically.
 - **Too many entries**: Reduce `MAX_SAMPLES` in `collect_data.py` (default: 200).
+
+## Accuracy Testing & Measurement
+
+### Overview
+
+The MapSnap project includes a three-part accuracy testing framework that measures
+the geolocation quality of the FAISS index:
+
+1. **accuracy_test.py** — Runs nearest-neighbor retrieval against ground truth coordinates
+2. **fail_analysis.py** — Categorizes retrieval errors by failure mode
+3. **accuracy_iteration.py** — Tests different FAISS configurations and recommends optimal params
+
+### Accuracy Test Results (2026-06-26)
+
+With 119 panorama entries from Overpass API:
+
+| Metric | Value |
+|--------|-------|
+| Total queries | 119 |
+| Successful | 119 |
+| P50 haversine distance | 0.0 m |
+| P90 haversine distance | 0.0 m |
+| P99 haversine distance | 0.0 m |
+| Mean haversine distance | 0.0 m |
+| Within 50m (top-1) | 119/119 (100%) |
+| Within 100m (top-1) | 119/119 (100%) |
+| Within 500m (top-1) | 119/119 (100%) |
+
+> **Note:** All distances are 0m because the current FAISS index is built from
+> embeddings that are deterministically derived from the same lat/lng coordinates.
+> This constitutes a self-retrieval test (each query returns its own pano as top-1).
+> With real image-based embeddings (DINOv2), distances would be non-zero.
+
+### Failure Modes Tested
+
+The failure analysis script categorizes errors into these modes:
+
+| Mode | Description |
+|------|-------------|
+| excellent | Near-perfect match (<=20m) |
+| good | Correct match (20-50m) |
+| fair | Moderate match (50-100m) |
+| interior | Generic buildings (turning_circle) |
+| road_segment | Road segment matches |
+| clustering | Multiple nearby turns confused |
+| far_mismatch | Large distance errors (>500m) |
+
+### Parameter Iteration Results
+
+Tested 11 configurations across nprobe and nlist values:
+
+| Config | nprobe | nlist | P50 (m) | Mean (m) | Latency |
+|--------|--------|-------|---------|----------|---------|
+| nprobe_1 | 1 | 4 | 0.0 | 0.0 | 0.025s |
+| nprobe_2 | 2 | 4 | 0.0 | 0.0 | 0.023s |
+| nprobe_4 | 4 | 4 | 0.0 | 0.0 | 0.025s |
+| nprobe_8 | 8 | 4 | 0.0 | 0.0 | 0.025s |
+| nprobe_16 | 16 | 4 | 0.0 | 0.0 | 0.025s |
+| nprobe_32 | 32 | 4 | 0.0 | 0.0 | 0.025s |
+| nlist_4 | 1 | 4 | 0.0 | 0.0 | 0.022s |
+| nlist_8 | 1 | 8 | 0.0 | 0.0 | 0.022s |
+| nlist_16 | 1 | 16 | 0.0 | 0.0 | 0.022s |
+| nlist_32 | 1 | 32 | 0.0 | 0.0 | 0.022s |
+| nlist_64 | 1 | 64 | 0.0 | 0.0 | 0.022s |
+
+**Recommended configuration:** nprobe=1, nlist=4, nm=32, nbits=6
+(standard config, minimal parameters for best performance)
+
+### Running the Tests
+
+```bash
+cd /home/st9797/.openclaw/workspace/mapsnap
+
+# 1. Run accuracy test
+python3 accuracy_test.py
+# Produces: data/accuracy_report.json
+
+# 2. Analyze failure modes
+python3 fail_analysis.py
+# Produces: data/failure_modes.json
+
+# 3. Test different FAISS configurations
+python3 accuracy_iteration.py
+# Produces: data/parameter_recs.json
+
+# Custom parameters:
+python3 accuracy_iteration.py --nprobe-range 1,2,4,8 --nlist-range 4,8,16
+```
+
+### Output File Formats
+
+#### accuracy_report.json
+- `total_queries` / `successful_queries` / `errors` — summary counts
+- `metrics` — aggregate distance statistics (p50, p90, p99, mean)
+- `per_query` — per-panorama top-1, top-5, top-10 distances
+
+#### failure_modes.json
+- `failure_modes` — count, percentage, mean/max/min distance per mode
+- `by_mode` — detailed entries grouped by failure category
+
+#### parameter_recs.json
+- `results` — full results for each tested configuration
+- `recommended` — best config with reasoning
+- `nprobe_recommended` / `nlist_recommended` — parameter-specific recommendations
