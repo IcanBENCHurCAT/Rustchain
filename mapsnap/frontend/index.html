@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>MapSnap</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+  <style>
+    /* ============================================
+       RESET & BASE
+       ============================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --color-bg: #0a0a0f;
+      --color-surface: #16161e;
+      --color-surface-elevated: #1e1e2a;
+      --color-primary: #4f8ef7;
+      --color-primary-glow: rgba(79, 142, 247, 0.25);
+      --color-success: #34d399;
+      --color-warning: #fbbf24;
+      --color-error: #f87171;
+      --color-text: #e8e8ef;
+      --color-text-secondary: #8888a0;
+      --color-border: rgba(255, 255, 255, 0.08);
+      --color-border-hover: rgba(255, 255, 255, 0.15);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--color-bg);
+      color: var(--color-text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      touch-action: manipulation;
+    }
+
+    #app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+    }
+
+    /* ============================================
+       HEADER
+       ============================================ */
+    .app-header {
+      padding: calc(12px + var(--safe-top)) 16px 10px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1000;
+    }
+
+    .header-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .app-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+
+    .app-subtitle {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      margin-top: 2px;
+    }
+
+    .icon-btn {
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover, .icon-btn:active {
+      border-color: var(--color-border-hover);
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* ============================================
+       MAIN CONTENT
+       ============================================ */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+
+    section {
+      display: none;
+    }
+
+    section.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================
+       UPLOAD SECTION
+       ============================================ */
+    .upload-section {
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      min-height: calc(100% - 60px);
+    }
+
+    .drop-zone {
+      width: 100%;
+      max-width: 340px;
+      border: 2px dashed var(--color-border-hover);
+      border-radius: var(--radius-xl);
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: var(--color-surface);
+      position: relative;
+    }
+
+    .drop-zone:active, .drop-zone.drag-over {
+      border-color: var(--color-primary);
+      background: rgba(79, 142, 247, 0.06);
+      transform: scale(0.98);
+    }
+
+    .drop-zone-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+
+    .drop-zone-text {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--color-text);
+    }
+
+    .drop-zone-hint {
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Camera & Gallery buttons */
+    .upload-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .upload-actions button {
+      flex: 1;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .camera-btn {
+      background: var(--color-primary);
+      color: #fff;
+    }
+
+    .camera-btn:active {
+      transform: scale(0.97);
+    }
+
+    .gallery-btn {
+      background: var(--color-surface-elevated);
+      color: var(--color-text);
+      border: 1px solid var(--color-border) !important;
+    }
+
+    .gallery-btn:active {
+      background: rgba(255,255,255,0.06);
+      transform: scale(0.97);
+    }
+
+    /* ============================================
+       PREVIEW SECTION
+       ============================================ */
+    .preview-section {
+      align-items: center;
+      padding: 20px 16px;
+      gap: 16px;
+    }
+
+    .preview-container {
+      width: 100%;
+      max-width: 340px;
+      aspect-ratio: 4/3;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: var(--color-surface);
+    }
+
+    #preview-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      border: none;
+      color: #fff;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .remove-btn:active {
+      background: rgba(0,0,0,0.8);
+    }
+
+    .primary-btn {
+      padding: 16px 32px;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 600;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      max-width: 340px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .primary-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .secondary-btn {
+      padding: 14px 24px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: var(--color-surface-elevated);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .secondary-btn:active {
+      transform: scale(0.97);
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* ============================================
+       LOADING SECTION
+       ============================================ */
+    .loading-section {
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .loading-hint {
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       RESULTS SECTION
+       ============================================ */
+    .results-section {
+      gap: 0;
+      padding-bottom: calc(16px + var(--safe-bottom));
+    }
+
+    /* Confidence */
+    .confidence-card {
+      margin: 12px 12px 0;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      border: 1px solid var(--color-border);
+    }
+
+    .confidence-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .confidence-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-secondary);
+    }
+
+    .confidence-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .confidence-bar-track {
+      height: 6px;
+      background: var(--color-surface-elevated);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .confidence-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    .confidence-text {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      margin-top: 6px;
+    }
+
+    /* Confidence color states */
+    .confidence-high .confidence-value { color: var(--color-success); }
+    .confidence-high .confidence-bar { background: var(--color-success); }
+    .confidence-medium .confidence-value { color: var(--color-warning); }
+    .confidence-medium .confidence-bar { background: var(--color-warning); }
+    .confidence-low .confidence-value { color: var(--color-error); }
+    .confidence-low .confidence-bar { background: var(--color-error); }
+
+    /* Location card */
+    .location-card {
+      margin: 8px 12px 0;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      border: 1px solid var(--color-border);
+    }
+
+    .location-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .location-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .coord-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      color: var(--color-text);
+    }
+
+    /* Map */
+    .map-container {
+      margin: 12px 12px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      position: relative;
+    }
+
+    #map {
+      height: 220px;
+      width: 100%;
+    }
+
+    /* Street View */
+    .streetview-section {
+      margin: 12px 12px 0;
+    }
+
+    .streetview-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .streetview-container {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+    }
+
+    .streetview-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      padding: 16px 12px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-buttons .secondary-btn {
+      flex: 1;
+    }
+
+    /* ============================================
+       ERROR SECTION
+       ============================================ */
+    .error-section {
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .error-icon {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .error-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .error-text {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      max-width: 280px;
+      line-height: 1.4;
+    }
+
+    .error-section .primary-btn {
+      margin-top: 8px;
+    }
+
+    /* ============================================
+       CONFIG PANEL
+       ============================================ */
+    .config-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(320px, 85vw);
+      height: 100%;
+      background: var(--color-surface);
+      z-index: 2000;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .config-panel.hidden {
+      display: none;
+    }
+
+    .config-header {
+      padding: calc(12px + var(--safe-top)) 16px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+
+    .config-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .config-body {
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .config-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .config-input {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      font-size: 0.95rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .config-input:focus {
+      border-color: var(--color-primary);
+    }
+
+    .config-hint {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ============================================
+       RESPONSIVE — small phones
+       ============================================ */
+    @media (max-width: 360px) {
+      .app-title { font-size: 1.2rem; }
+      .drop-zone { padding: 32px 20px; }
+      .drop-zone-icon { font-size: 2.5rem; }
+      #map { height: 180px; }
+    }
+
+    /* ============================================
+       DESKTOP — centered card layout
+       ============================================ */
+    @media (min-width: 768px) {
+      #app {
+        max-width: 480px;
+        margin: 0 auto;
+        border-left: 1px solid var(--color-border);
+        border-right: 1px solid var(--color-border);
+        box-shadow: 0 0 48px rgba(0,0,0,0.3);
+      }
+    }
+
+    /* Utility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <h1 class="app-title">MapSnap</h1>
+        <p class="app-subtitle">Where was this photo taken?</p>
+      </div>
+      <button id="config-btn" class="icon-btn" title="Settings" aria-label="Settings">⚙️</button>
+    </header>
+
+    <!-- Main content area -->
+    <main class="main-content">
+      <!-- Upload / Camera section -->
+      <section id="upload-section" class="upload-section active">
+        <div id="drop-zone" class="drop-zone">
+          <div class="drop-zone-icon">📸</div>
+          <p class="drop-zone-text">Tap to capture or upload a photo</p>
+          <p class="drop-zone-hint">Works best with street scene photos</p>
+        </div>
+        <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" hidden />
+        <input type="file" id="camera-input" accept="image/*" capture="environment" hidden />
+        <div class="upload-actions">
+          <button id="camera-btn" class="camera-btn">📷 Camera</button>
+          <button id="gallery-btn" class="gallery-btn">🖼️ Gallery</button>
+        </div>
+      </section>
+
+      <!-- Preview section -->
+      <section id="preview-section" class="preview-section">
+        <div class="preview-container">
+          <img id="preview-image" src="" alt="Preview" />
+          <button id="remove-preview" class="remove-btn" aria-label="Remove image">✕</button>
+        </div>
+        <button id="predict-btn" class="primary-btn">
+          <span>📍</span>
+          <span class="btn-text">Find Location</span>
+        </button>
+      </section>
+
+      <!-- Loading section -->
+      <section id="loading-section" class="loading-section">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="loading-text">Analyzing photo...</p>
+        <p class="loading-hint">Matching against street panoramas</p>
+      </section>
+
+      <!-- Results section -->
+      <section id="results-section" class="results-section">
+        <!-- Confidence card -->
+        <div id="confidence-card" class="confidence-card">
+          <div class="confidence-header">
+            <span class="confidence-label">Confidence</span>
+            <span id="confidence-value" class="confidence-value">0%</span>
+          </div>
+          <div class="confidence-bar-track">
+            <div id="confidence-bar" class="confidence-bar" style="width: 0%"></div>
+          </div>
+          <p id="confidence-text" class="confidence-text"></p>
+        </div>
+
+        <!-- Location details -->
+        <div id="location-details" class="location-card">
+          <div class="location-row">
+            <span class="location-icon">📍</span>
+            <div class="location-info">
+              <span id="coord-text" class="coord-text">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map -->
+        <div id="map-container" class="map-container">
+          <div id="map" class="map"></div>
+        </div>
+
+        <!-- Street View -->
+        <div id="streetview-section" class="streetview-section">
+          <h3 class="streetview-title">Street View Preview</h3>
+          <div id="streetview-container" class="streetview-container"></div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="action-buttons">
+          <button id="try-again-btn" class="secondary-btn">🔄 Try Again</button>
+        </div>
+      </section>
+
+      <!-- Error section -->
+      <section id="error-section" class="error-section">
+        <div class="error-icon">⚠️</div>
+        <h2 class="error-title">Oops!</h2>
+        <p id="error-text" class="error-text">Something went wrong.</p>
+        <button id="error-retry-btn" class="primary-btn">Try Again</button>
+      </section>
+    </main>
+
+    <!-- Config panel (slide-in) -->
+    <div id="config-panel" class="config-panel hidden">
+      <div class="config-header">
+        <h2>Settings</h2>
+        <button id="config-close" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="config-body">
+        <label class="config-label" for="api-url-input">API Base URL</label>
+        <input type="text" id="api-url-input" class="config-input" placeholder="http://localhost:8000" value="http://localhost:8000" />
+        <p class="config-hint">Default: http://localhost:8000</p>
+        <button id="config-save" class="primary-btn" style="width: 100%; margin-top: 12px;">Save</button>
+      </div>
+    </div>
+
+    <!-- Overlay behind config panel -->
+    <div id="overlay" class="overlay"></div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
