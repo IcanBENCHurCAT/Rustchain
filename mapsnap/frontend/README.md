@@ -22,8 +22,8 @@ A mobile-first web app for visual geolocation. Upload a photo and MapSnap finds 
 
 ### Prerequisites
 
-- Node.js 18+
-- MapSnap backend running on port 8000
+- Node.js 22+
+- MapSnap backend running on port 8080
 
 ### Installation
 
@@ -38,7 +38,7 @@ npm install
 npm run dev
 ```
 
-This starts the dev server at `http://localhost:5173`. The app connects to the backend at `http://localhost:8000` by default.
+This starts the dev server at `http://localhost:5173`. The app connects to the backend at `http://localhost:8080` by default (proxied via Vite).
 
 To use a different API endpoint, open Settings (⚙️) and enter the API base URL.
 
@@ -53,7 +53,7 @@ npm run preview
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VITE_API_BASE` | `http://localhost:8000` | Backend API base URL |
+| `VITE_API_BASE` | `http://localhost:8080` | Backend API base URL |
 
 Set via `.env` file or environment variables.
 

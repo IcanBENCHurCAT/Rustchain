@@ -7,7 +7,7 @@
 // CONFIG
 // ============================================
 
-const DEFAULT_API_BASE = 'http://localhost:8000';
+const DEFAULT_API_BASE = 'http://localhost:8080';
 
 function getApiBaseUrl() {
   return import.meta.env.VITE_API_BASE || localStorage.getItem('mapsnap_api_base') || DEFAULT_API_BASE;
