@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MapSnap — Where am I?</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        crossorigin="" />
+
+  <style>
+    /* ---- Reset & Base ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4F46E5;
+      --primary-light: #818CF8;
+      --primary-dark: #3730A3;
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --success: #10B981;
+      --danger: #EF4444;
+      --radius: 16px;
+      --shadow: 0 4px 24px rgba(0,0,0,.08);
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--primary);
+      color: #fff;
+      text-align: center;
+      padding: 20px 16px 16px;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .header p {
+      font-size: .85rem;
+      opacity: .85;
+      margin-top: 4px;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+    }
+
+    /* ---- Card wrapper ---- */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    /* ---- Upload area ---- */
+    .upload-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      gap: 12px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .upload-zone:active {
+      border-color: var(--primary);
+      background: #EEF2FF;
+    }
+    .upload-icon {
+      width: 56px; height: 56px;
+      background: var(--primary-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .upload-icon svg { width: 28px; height: 28px; }
+    .upload-zone span {
+      font-size: .95rem;
+      color: var(--text-muted);
+    }
+    .upload-zone strong { color: var(--primary); }
+
+    #fileInput { display: none; }
+
+    /* ---- Preview ---- */
+    .preview {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    .preview img {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    /* ---- Buttons ---- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .1s, background .2s;
+      width: 100%;
+      max-width: 320px;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+
+    /* ---- Loading spinner ---- */
+    .loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      gap: 16px;
+    }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p {
+      font-size: .9rem;
+      color: var(--text-muted);
+    }
+
+    /* ---- Results ---- */
+    .results { display: none; }
+
+    .result-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .result-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: .8rem;
+      font-weight: 600;
+    }
+    .confidence-badge.high { background: #D1FAE5; color: #065F46; }
+    .confidence-badge.medium { background: #FEF3C7; color: #92400E; }
+    .confidence-badge.low { background: #FEE2E2; color: #991B1B; }
+
+    /* ---- Map ---- */
+    #map {
+      width: 100%;
+      height: 260px;
+      background: #E2E8F0;
+    }
+
+    /* ---- Street View ---- */
+    .streetview-section { padding: 0 16px 16px; }
+    .streetview-section h3 {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+    .streetview-container {
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+    }
+    .streetview-container iframe {
+      display: block;
+      width: 100%;
+      height: 200px;
+      border: none;
+    }
+
+    /* ---- Error ---- */
+    .error-box {
+      display: none;
+      padding: 16px 20px;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 12px;
+      color: #991B1B;
+      font-size: .9rem;
+    }
+
+    /* ---- Footer / Actions ---- */
+    .actions {
+      padding: 12px 16px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .actions .btn { max-width: 100%; }
+
+    /* ---- Hide utility ---- */
+    .hidden { display: none !important; }
+
+    /* ---- Landscape / bigger screens ---- */
+    @media (min-width: 600px) {
+      .main { max-width: 480px; margin: 0 auto; }
+      #map { height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>📍 MapSnap</h1>
+    <p>Take a photo — find out where it is</p>
+  </div>
+
+  <div class="main">
+
+    <!-- Upload zone -->
+    <div id="uploadSection">
+      <label class="upload-zone" for="fileInput" id="uploadZone">
+        <div class="upload-icon">
+          <svg fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+            <circle cx="12" cy="13" r="3"/>
+          </svg>
+        </div>
+        <span><strong>Take a photo</strong> or tap to upload</span>
+      </label>
+      <input type="file"
+             id="fileInput"
+             accept="image/*"
+             capture="environment"
+             style="display:none">
+    </div>
+
+    <!-- Image preview -->
+    <div class="card preview" id="previewCard">
+      <img id="previewImg" alt="Preview">
+      <div style="padding:12px 16px; display:flex; align-items:center; justify-content:space-between; width:100%;">
+        <span id="fileName" style="font-size:.85rem; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60%;"></span>
+        <button class="btn btn-outline" style="padding:8px 16px; font-size:.85rem; width:auto;" id="retakeBtn">Retake</button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="card loading" id="loadingSection">
+      <div class="spinner"></div>
+      <p>Analyzing your photo…</p>
+    </div>
+
+    <!-- Results -->
+    <div class="card results" id="resultsSection">
+      <div class="result-header">
+        <h2 id="resultTitle">📍 Location Found</h2>
+        <span class="confidence-badge" id="confidenceBadge"></span>
+      </div>
+
+      <!-- Map -->
+      <div id="map"></div>
+
+      <!-- Street View -->
+      <div class="streetview-section">
+        <h3>Street View</h3>
+        <div class="streetview-container">
+          <iframe id="streetviewIframe"
+                  allow="fullscreen"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-box card" id="errorBox">
+      <strong>Oops!</strong>
+      <span id="errorText">We couldn't process your photo right now. Please try again.</span>
+    </div>
+  </div>
+
+  <!-- Actions bar (always visible when results shown) -->
+  <div class="actions hidden" id="actionsBar">
+    <button class="btn btn-primary" id="tryAgainBtn">📷 Try Again</button>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          crossorigin=""></script>
+
+  <script>
+    (() => {
+      'use strict';
+
+      // ---- Config ----
+      // Use relative path so it works when served from the same host as the API,
+      // or deploy on CloudRun where it's on the same origin.
+      const API_BASE = '';
+
+      // ---- DOM refs ----
+      const $ = id => document.getElementById(id);
+      const uploadSection   = $('uploadSection');
+      const fileInput       = $('fileInput');
+      const previewCard     = $('previewCard');
+      const previewImg      = $('previewImg');
+      const fileNameEl      = $('fileName');
+      const loadingSection  = $('loadingSection');
+      const resultsSection  = $('resultsSection');
+      const resultTitle     = $('resultTitle');
+      const confidenceBadge = $('confidenceBadge');
+      const mapEl           = $('map');
+      const streetviewIframe = $('streetviewIframe');
+      const errorBox        = $('errorBox');
+      const errorText       = $('errorText');
+      const actionsBar      = $('actionsBar');
+      const tryAgainBtn     = $('tryAgainBtn');
+      const retakeBtn       = $('retakeBtn');
+      const uploadZone      = $('uploadZone');
+
+      let map = null;
+      let marker = null;
+      let accuracyCircle = null;
+
+      // ---- State ----
+      let selectedFile = null;
+
+      // ---- Helpers ----
+      function show(...ids) {
+        ids.forEach(id => {
+          const el = $(id);
+          if (el) el.classList.remove('hidden');
+        });
+      }
+      function hide(...ids) {
+        ids.forEach(id => {
+          const el = $(id);
+          if (el) el.classList.add('hidden');
+        });
+      }
+      function showBlock(...ids) {
+        ids.forEach(id => {
+          const el = $(id);
+          if (el) el.style.display = '';
+        });
+      }
+      function hideBlock(...ids) {
+        ids.forEach(id => {
+          const el = $(id);
+          if (el) el.style.display = 'none';
+        });
+      }
+
+      function hideAllPanels() {
+        hideBlock('previewCard', 'loadingSection', 'resultsSection');
+        hide('actionsBar');
+      }
+
+      function setView(view) {
+        hideAllPanels();
+        showBlock(view);
+        if (view === 'results') {
+          show('actionsBar');
+          if (map) map.invalidateSize();
+        }
+      }
+
+      function confLevel(c) {
+        if (c >= 0.7) return 'high';
+        if (c >= 0.4) return 'medium';
+        return 'low';
+      }
+
+      function confPercent(c) {
+        return Math.round(c * 100) + '%';
+      }
+
+      // ---- Init Map ----
+      function initMap(lat, lng) {
+        if (map) {
+          map.remove();
+          map = null;
+          marker = null;
+          accuracyCircle = null;
+        }
+        map = L.map(mapEl, {
+          zoomControl: true,
+          attributionControl: false
+        }).setView([lat, lng], 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+        }).addTo(map);
+
+        const leafIcon = L.divIcon({
+          className: 'custom-marker',
+          html: `<div style="
+            width:28px;height:28px;
+            background:#4F46E5;
+            border:3px solid #fff;
+            border-radius:50% 50% 50% 0;
+            transform:rotate(-45deg);
+            box-shadow:0 2px 8px rgba(0,0,0,.3);
+          "></div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 28],
+          popupAnchor: [0, -28]
+        });
+
+        marker = L.marker([lat, lng], { icon: leafIcon }).addTo(map);
+        marker.bindPopup(`<b>MapSnap</b><br>Lat: ${lat.toFixed(5)}<br>Lng: ${lng.toFixed(5)}`).openPopup();
+      }
+
+      function addAccuracyCircle(lat, lng, confidence) {
+        if (accuracyCircle) map.removeLayer(accuracyCircle);
+
+        // Radius in meters: higher confidence = tighter radius
+        // Scale: confidence 1.0 → 50m, 0.0 → 5000m
+        const radiusM = Math.max(50, 5000 - confidence * 4950);
+
+        accuracyCircle = L.circle([lat, lng], {
+          radius: radiusM,
+          color: '#4F46E5',
+          fillColor: '#818CF8',
+          fillOpacity: 0.15,
+          weight: 2
+        }).addTo(map);
+      }
+
+      // ---- Handle file selection ----
+      function handleFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        selectedFile = file;
+
+        // Show preview
+        fileNameEl.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = e => {
+          previewImg.src = e.target.result;
+          setView('previewCard');
+        };
+        reader.readAsDataURL(file);
+      }
+
+      fileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) handleFile(file);
+      });
+
+      // Upload zone click triggers file input
+      uploadZone.addEventListener('click', () => fileInput.click());
+
+      // ---- Retake / Try again ----
+      function resetApp() {
+        selectedFile = null;
+        fileInput.value = '';
+        errorBox.style.display = 'none';
+        setView('uploadSection');
+      }
+
+      retakeBtn.addEventListener('click', resetApp);
+      tryAgainBtn.addEventListener('click', resetApp);
+
+      // ---- Submit image to API ----
+      async function submitImage() {
+        if (!selectedFile) return;
+
+        hideAllPanels();
+        showBlock('loadingSection');
+
+        const formData = new FormData();
+        formData.append('file', selectedFile, selectedFile.name);
+
+        try {
+          const resp = await fetch(`${API_BASE}/predict`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!resp.ok) {
+            const errData = await resp.json().catch(() => ({}));
+            throw new Error(errData.detail || errData.error || `Server error ${resp.status}`);
+          }
+
+          const data = await resp.json();
+
+          // Build result card
+          const lat = data.latitude;
+          const lng = data.longitude;
+          const conf = data.confidence;
+          const panoId = data.pano_id;
+
+          resultTitle.textContent = '📍 Location Found';
+
+          // Confidence badge
+          confidenceBadge.textContent = confPercent(conf);
+          confidenceBadge.className = `confidence-badge ${confLevel(conf)}`;
+
+          // Map
+          initMap(lat, lng);
+          addAccuracyCircle(lat, lng, conf);
+
+          // Street View — use the pano_id from the response
+          // Google Street View Embed API with panorama ID
+          if (panoId) {
+            streetviewIframe.src =
+              `https://www.google.com/maps/embed?pb=!4v1700000000000!` +
+              `!6m2!1s0x0:0x0!7i${parseInt(panoId, 16) || 0}!8i0` +
+              `&panoid=${encodeURIComponent(panoId)}`;
+            // Also try direct panorama URL in iframe
+            streetviewIframe.src =
+              `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}&panoid=${encodeURIComponent(panoId)}`;
+          } else {
+            streetviewIframe.src =
+              `https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2000!2d${lng}!3d${lat}!2f0!3f0!3m2!1i1024!2i768`;
+          }
+
+          setView('results');
+
+        } catch (err) {
+          console.error('Predict error:', err);
+          errorText.textContent = err.message || 'Could not reach the MapSnap API.';
+          hideAllPanels();
+          showBlock('errorBox');
+          show('actionsBar');
+        }
+      }
+
+      // Show "Submit" button on preview card instead of retake
+      const origRetakeHTML = retakeBtn.outerHTML;
+      retakeBtn.replaceWith(retakeBtn.cloneNode(true));
+
+      function setupPreviewActions() {
+        const newRetake = $('retakeBtn') || document.querySelector('#previewCard .btn-outline');
+        const analyzeBtn = document.createElement('button');
+        analyzeBtn.className = 'btn btn-primary';
+        analyzeBtn.style.cssText = 'padding:8px 20px; font-size:.85rem; width:auto;';
+        analyzeBtn.textContent = '🔍 Find Location';
+        analyzeBtn.addEventListener('click', submitImage);
+
+        // If retake exists, add analyze next to it
+        const cardInner = previewCard.children[previewCard.children.length - 1];
+        if (cardInner && cardInner.firstChild) {
+          cardInner.appendChild(analyzeBtn);
+        } else {
+          // Fallback: build the actions row
+          const row = document.createElement('div');
+          row.style.cssText = 'padding:12px 16px; display:flex; align-items:center; gap:12px; width:100%;';
+          row.innerHTML = `<span id="fileName" style="font-size:.85rem; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:50%;"></span>`;
+          const retake = document.createElement('button');
+          retake.className = 'btn btn-outline';
+          retake.style.cssText = 'padding:8px 16px; font-size:.85rem; width:auto;';
+          retake.textContent = 'Retake';
+          retake.addEventListener('click', resetApp);
+          row.appendChild(retake);
+          row.appendChild(analyzeBtn);
+          previewCard.appendChild(row);
+        }
+
+        // Re-bind retake
+        const rBtn = previewCard.querySelector('.btn-outline');
+        if (rBtn) rBtn.addEventListener('click', resetApp);
+      }
+
+      // Patch preview card to add submit button
+      const origHandleFile = handleFile;
+      // Actually, let me redefine handleFile properly
+      function handleFileV2(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        selectedFile = file;
+
+        fileNameEl.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = e => {
+          previewImg.src = e.target.result;
+          setView('previewCard');
+          // Inject analyze button
+          injectAnalyzeButton();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function injectAnalyzeButton() {
+        const existing = document.getElementById('analyzeBtn');
+        if (existing) return; // already injected
+
+        const analyzeBtn = document.createElement('button');
+        analyzeBtn.id = 'analyzeBtn';
+        analyzeBtn.className = 'btn btn-primary';
+        analyzeBtn.style.cssText = 'padding:8px 20px; font-size:.85rem; width:auto;';
+        analyzeBtn.textContent = '🔍 Find Location';
+        analyzeBtn.addEventListener('click', submitImage);
+
+        const row = previewCard.lastElementChild;
+        if (row) {
+          row.appendChild(analyzeBtn);
+        }
+      }
+
+      // Re-bind fileInput to use V2
+      fileInput.removeEventListener('change', () => {});
+      fileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) handleFileV2(file);
+      });
+
+      // Re-bind retake
+      document.querySelector('#previewCard .btn-outline')?.addEventListener('click', resetApp);
+
+      // ---- Initial state ----
+      setView('uploadSection');
+
+      // ---- Debug log ----
+      console.log('MapSnap frontend loaded. API:', API_BASE);
+    })();
+  </script>
+
+</body>
+</html>

@@ -60,6 +60,9 @@ logging.basicConfig(
 )
 log = logging.getLogger("mapsnap")
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse
+
 # ---------------------------------------------------------------------------
 # FastAPI app
 # ---------------------------------------------------------------------------
@@ -351,9 +354,13 @@ class HealthResponse(BaseModel):
 # API Endpoints
 # ---------------------------------------------------------------------------
 
+HTML_FILE = BASE_DIR / "index.html"
+
 @app.get("/")
-def root():
-    """Service info."""
+async def root():
+    """Serve the MapSnap frontend."""
+    if HTML_FILE.is_file():
+        return FileResponse(str(HTML_FILE))
     return {
         "service": "MapSnap",
         "version": "1.0.0",
