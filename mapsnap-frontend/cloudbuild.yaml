@@ -1,0 +1,5 @@
+# Cloud Build config for MapSnap frontend
+steps:
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: ['rsync', '-R', '-d', './', 'gs://mapsnap-frontend-static/']
+    entrypoint: gsutil

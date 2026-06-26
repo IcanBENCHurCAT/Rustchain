@@ -5,8 +5,10 @@
 (function () {
   'use strict';
 
-  /* ---------- Constants ---------- */
-  const API_BASE = 'http://localhost:8080';
+  /* ---------- Configuration ---------- */
+  // API base URL — override via window.MAPSNAP_API_BASE before page load.
+  // Default is localhost:8080 for local dev; set to CloudRun URL in prod.
+  const API_BASE = (typeof window !== 'undefined' && window.MAPSNAP_API_BASE) || 'http://localhost:8080';
   const PREDICT_ENDPOINT = `${API_BASE}/predict`;
 
   /* ---------- DOM refs ---------- */
@@ -146,15 +148,24 @@
   }
 
   /* ==========================================================================
-     Street View
+     Street View / Map Preview
      ========================================================================== */
 
-  function setStreetView(lat, lon, url) {
-    currentStreetViewUrl = url;
+  function setStreetView(lat, lon, panoUrl) {
+    currentStreetViewUrl = panoUrl || null;
 
-    if (url) {
+    if (panoUrl || lat != null) {
+      // Use a Google Maps iframe centered on the coordinates.
+      // This works without an API key and shows the location context.
+      const embedUrl = `https://maps.google.com/maps?q=${lat},${lon}&z=17&output=embed`;
       els.streetview.innerHTML =
-        `<iframe src="${url}" allowfullscreen style="width:100%;height:100%;border:none;"></iframe>`;
+        `<iframe src="${embedUrl}" allowfullscreen loading="lazy"
+                style="width:100%;height:100%;border:none;"></iframe>`;
+      // Add a link to Street View if we have a pano_id
+      if (panoUrl) {
+        els.streetview.innerHTML +=
+          `<a href="${panoUrl}" target="_blank" rel="noopener" style="position:absolute;bottom:8px;right:8px;background:var(--primary);color:#fff;padding:4px 10px;border-radius:6px;font-size:.8rem;text-decoration:none;">Open in Street View</a>`;
+      }
       show(els.streetview.parentElement);
     } else {
       els.streetview.innerHTML = '';
@@ -170,7 +181,8 @@
     setProgress(10, 'Uploading...');
 
     const formData = new FormData();
-    formData.append('image', imageFile, imageFile.name || 'photo.jpg');
+    // API expects the field name to be 'file' (matches UploadFile = File(...))
+    formData.append('file', imageFile, imageFile.name || 'photo.jpg');
 
     const response = await fetch(PREDICT_ENDPOINT, {
       method: 'POST',
@@ -194,14 +206,12 @@
     hide(els.loadingOverlay);
     hide(els.progressBar);
 
-    const best = data.predictions && data.predictions.length
-      ? data.predictions[0]
-      : data;
-
-    const lat  = best.lat ?? best.latitude ?? data.lat ?? data.latitude;
-    const lon  = best.lon  ?? best.longitude ?? data.lon ?? data.longitude ?? data.lng;
-    const conf = best.confidence ?? data.confidence ?? data.confidence_score ?? 0;
-    const label = best.location ?? best.label ?? best.name ?? best.place_name ?? best.city ?? best.description ?? '';
+    // API response: { pano_id, latitude, longitude, confidence, distance, n_results,
+    //                 top_k, streetview_url, mode }
+    const lat = data.latitude;
+    const lon = data.longitude;
+    const conf = data.confidence ?? 0;
+    const panoId = data.pano_id;
 
     if (lat == null || lon == null) {
       showError('Backend returned results without GPS coordinates.');
@@ -211,7 +221,7 @@
     currentLatLng = toLatLng(lat, lon);
 
     // Confidence badge
-    const scorePct = Math.round((typeof conf === 'number' ? conf : parseFloat(conf)) * 100);
+    const scorePct = Math.round(conf * 100);
     els.confidenceBadge.className = `confidence-badge ${confidenceClass(conf)}`;
     els.confidenceValue.textContent = `${scorePct}%`;
 
@@ -223,21 +233,11 @@
     renderTopK(data);
 
     // Map
-    updateMap(lat, lon, label);
+    updateMap(lat, lon, '');
 
-    // Street View (Google)
-    if (data.street_view_url) {
-      setStreetView(lat, lon, data.street_view_url);
-    } else {
-      // Fallback: try constructing a SV URL if the API returned coordinates
-      // but no explicit SV URL
-      if (data.prediction && data.prediction.street_view_url) {
-        setStreetView(lat, lon, data.prediction.street_view_url);
-      } else {
-        // Best-effort: Google Maps Street View link
-        const fallbackUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}`;
-        setStreetView(lat, lon, fallbackUrl);
-      }
+    // Street View — the API already provides a pano URL
+    if (data.streetview_url) {
+      setStreetView(lat, lon, data.streetview_url);
     }
 
     // Show results card
@@ -252,22 +252,26 @@
   function renderTopK(data) {
     els.topKResults.innerHTML = '';
 
-    // Support multiple response shapes
+    // API top_k shape: [{ pano_id, lat, lng, distance }, ...]
+    // Convert cosine distance (0-2) to confidence: confidence = 1 - (dist/2)
     let items = [];
 
     if (Array.isArray(data.top_k)) {
-      items = data.top_k.map((item, i) => ({
-        label: item.location || item.place || item.name || `Result ${i + 1}`,
-        lat: item.lat || item.latitude,
-        lon: item.lon || item.longitude,
-        confidence: item.confidence ?? 0,
-        index: i,
-      }));
+      items = data.top_k.map((item, i) => {
+        const conf = item.confidence ?? Math.max(0, 1 - (item.distance ?? 0) / 2);
+        return {
+          label: item.pano_id || `Result ${i + 1}`,
+          lat: item.lat ?? item.latitude,
+          lon: item.lon ?? item.longitude ?? item.lng,
+          confidence: conf,
+          index: i,
+        };
+      });
     } else if (Array.isArray(data.predictions)) {
       items = data.predictions.map((item, i) => ({
         label: item.location || item.place || item.name || `Result ${i + 1}`,
         lat: item.lat || item.latitude,
-        lon: item.lon || item.longitude,
+        lon: item.lon || item.longitude ?? item.lng,
         confidence: item.confidence ?? 0,
         index: i,
       }));
