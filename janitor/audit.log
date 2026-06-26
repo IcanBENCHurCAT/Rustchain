@@ -1,0 +1,22 @@
+2026-06-26T20:36:38.592640+00:00 | rm -rf agents | age=2d | safety=GREEN
+2026-06-26T20:36:38.592725+00:00 | rm check_notifs.py | age=3d | safety=GREEN
+2026-06-26T20:36:38.594752+00:00 | rm -rf conyers-tutor | age=0d | safety=GREEN
+2026-06-26T20:36:38.861348+00:00 | rm -rf cybers-tutor-frontend | age=0d | safety=GREEN
+2026-06-26T20:36:38.928095+00:00 | rm -rf cybers-tutor-proxy | age=0d | safety=GREEN
+2026-06-26T20:36:38.928231+00:00 | rm flux_avatar.py | age=0d | safety=GREEN
+2026-06-26T20:36:38.928297+00:00 | rm flux_generate.py | age=0d | safety=GREEN
+2026-06-26T20:36:38.928809+00:00 | rm haunted_house_actor_warmup_routine.md | age=7d | safety=GREEN
+2026-06-26T20:36:38.931073+00:00 | rm -rf idea_factory | age=2d | safety=GREEN
+2026-06-26T20:36:38.932333+00:00 | rm -rf indentation-issue | age=1d | safety=GREEN
+2026-06-26T20:36:38.933594+00:00 | rm -rf moltbook-posts | age=0d | safety=GREEN
+2026-06-26T20:36:38.934616+00:00 | rm -rf moltbook_projects | age=1d | safety=GREEN
+2026-06-26T20:36:38.936700+00:00 | rm -rf nasty-old-chicken-hands | age=1d | safety=GREEN
+2026-06-26T20:36:38.936732+00:00 | rm nasty-old-chicken-hands-poem.txt | age=9d | safety=GREEN
+2026-06-26T20:36:38.937645+00:00 | rm -rf research | age=2d | safety=GREEN
+2026-06-26T20:36:38.937684+00:00 | rm sara-love-song.txt | age=10d | safety=GREEN
+2026-06-26T20:36:38.937717+00:00 | rm sara_love_song.txt | age=10d | safety=GREEN
+2026-06-26T20:36:38.937751+00:00 | rm sara_love_song_gman.wav | age=10d | safety=GREEN
+2026-06-26T20:36:38.937784+00:00 | rm temp-secret-test.txt | age=0d | safety=GREEN
+2026-06-26T20:36:38.937815+00:00 | rm test-newlines.txt | age=0d | safety=GREEN
+2026-06-26T20:36:38.937856+00:00 | rm tmp_inspect_agents.py | age=0d | safety=GREEN
+2026-06-26T20:36:38.938614+00:00 | rm -rf warmup_routines | age=4d | safety=GREEN

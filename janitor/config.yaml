@@ -1,0 +1,47 @@
+# Janitor System Configuration
+# All paths relative to workspace root (~/.openclaw/workspace/)
+
+# Minimum age in days before a file/dir is considered "stale"
+age_threshold_days: 30
+
+# Directories that are NEVER scanned (too deep, cache, etc.)
+excluded_patterns:
+  - __pycache__
+  - .git
+  - .openclaw
+  - hf_cache
+
+# Absolute paths under workspace that are PROTECTED — never eligible for deletion
+protected_paths:
+  - SOUL.md
+  - USER.md
+  - IDENTITY.md
+  - MEMORY.md
+  - MEMORY.md.bak
+  - AGENTS.md
+  - TOOLS.md
+  - HEARTBEAT.md
+  - DREAMS.md
+  - ETHICS.md
+  - novel-writing-proposal.md
+  - memory/
+  - skills/
+  - logs/
+  - scripts/
+  - mapsnap/
+  - mapsnap-frontend/
+  - surveillance-rpg/
+  - extraterrestrial-mythos/
+  - janitor/
+  - .clawhub/
+
+# File patterns to always protect
+protected_file_patterns:
+  - "*.md"
+  - "*.json"
+  - "*.yaml"
+  - "*.yml"
+
+# Safety: minimum confidence score for auto-delete
+# 0.0 = delete everything eligible, 1.0 = require manual review always
+auto_delete_confidence_threshold: 0.9
