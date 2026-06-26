@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- iOS home-screen meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#050811">
   <title>Aegis Threat Protocol - Cyber Roguelike RPG</title>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,6 +105,10 @@
       background-color:#03060a;border:2px solid var(--border-glow);
       width:100%;height:400px;border-radius:4px;
       box-shadow:0 0 25px rgba(0,243,255,0.1);
+      /* Crisp pixel rendering on mobile/HIDPI displays */
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      image-rendering: pixelated;
     }
     .btn {
       background:rgba(0,243,255,0.05);border:1px solid var(--cyan-glow);
@@ -279,6 +287,256 @@
     .preview-card { border:1px solid var(--border-glow);background:#03060a;padding:10px;border-radius:4px;text-align:center; }
     .preview-card canvas { width:140px;height:140px;background:#05080c;border-radius:4px; }
     .preview-controls { display:flex;gap:15px;margin-bottom:10px; }
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+       MOBILE SUPPORT
+       ═══════════════════════════════════════════════════════════════════════════ */
+
+    /* Safe area support for notched devices */
+    @supports (padding: max(0px)) {
+      body {
+        padding: max(env(safe-area-inset-top, 0px), 8px)
+               max(env(safe-area-inset-right, 0px), 0px)
+               max(env(safe-area-inset-bottom, 0px), 8px)
+               max(env(safe-area-inset-left, 0px), 0px);
+      }
+    }
+
+    /* Prevent pinch-to-zoom and text selection on game elements */
+    .game-container,
+    #gameCanvas,
+    .ability-btn,
+    .narrative-choice-btn,
+    .draft-option {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    /* Block touch scroll within game canvas for full game control */
+    .game-container {
+      touch-action: none;
+    }
+
+    /* Make canvas responsive — fills container, maintains aspect ratio */
+    #gameCanvas {
+      aspect-ratio: 2 / 1;
+      height: auto;
+    }
+
+    /* Mobile audio unlock overlay */
+    #audio-unlock-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-dark);
+      background-image: var(--bg-radial);
+      z-index: 99999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 20px;
+      cursor: pointer;
+    }
+    #audio-unlock-overlay::before {
+      content: " "; display: block; position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.3) 50%);
+      background-size: 100% 4px; z-index: 1;
+      pointer-events: none; opacity: 0.25; animation: scanline-flicker 0.15s infinite;
+    }
+    #audio-unlock-overlay .unlock-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 30px 40px;
+      border: 2px solid var(--cyan-glow);
+      border-radius: 4px;
+      background: rgba(0,0,0,0.8);
+      box-shadow: 0 0 30px rgba(0,243,255,0.3), inset 0 0 15px rgba(0,243,255,0.05);
+      animation: unlock-pulse 2s infinite ease-in-out;
+    }
+    @keyframes unlock-pulse {
+      0%, 100% { box-shadow: 0 0 30px rgba(0,243,255,0.3); }
+      50% { box-shadow: 0 0 50px rgba(0,243,255,0.6); }
+    }
+    #audio-unlock-overlay .unlock-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      animation: icon-blink 1.5s infinite;
+    }
+    @keyframes icon-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    #audio-unlock-overlay .unlock-text {
+      font-family: var(--font-header);
+      font-size: 1.4rem;
+      color: var(--cyan-glow);
+      letter-spacing: 3px;
+      text-shadow: 0 0 8px rgba(0,243,255,0.5);
+      text-transform: uppercase;
+    }
+    #audio-unlock-overlay .unlock-sub {
+      font-family: var(--font-cyber);
+      font-size: 0.9rem;
+      color: var(--text-gray);
+      margin-top: 8px;
+    }
+
+    /* Tablet */
+    @media (max-width: 768px) {
+      header { padding: 16px 12px; }
+      h1 { font-size: 1.8rem; letter-spacing: 4px; }
+      .main-container {
+        flex-direction: column;
+        max-width: 600px;
+        padding: 0 10px;
+        gap: 15px;
+        margin: 15px auto;
+      }
+      .left-panel, .right-panel {
+        flex: none;
+        width: 100%;
+      }
+      .right-panel { max-height: none; }
+      .class-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      #gameCanvas {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 2 / 1;
+      }
+      .panel { padding: 14px; }
+      .btn { padding: 10px 14px; font-size: 0.85rem; }
+      .ability-btn {
+        min-height: 44px;
+        padding: 8px 6px;
+        font-size: 0.75rem;
+      }
+      .ability-btn .ability-name { font-size: 0.78rem; }
+      #ability-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      #combat-log {
+        height: 100px;
+        font-size: 0.72rem;
+      }
+      .narrative-content {
+        max-width: 90%;
+        padding: 18px 20px;
+      }
+      .narrative-title { font-size: 1.2rem; }
+      .narrative-desc { font-size: 0.85rem; }
+      .narrative-choice-btn { padding: 10px 12px; font-size: 0.8rem; }
+      .shop-btn, .buy-btn {
+        min-height: 44px;
+        padding: 8px 8px;
+        font-size: 0.75rem;
+      }
+    }
+
+    /* Phone */
+    @media (max-width: 480px) {
+      header { padding: 10px 8px; }
+      h1 { font-size: 1.3rem; letter-spacing: 2px; }
+      header p { font-size: 0.75rem; }
+      .main-container { gap: 10px; padding: 0 6px; margin: 10px auto; }
+      .panel { padding: 10px; }
+      .panel h3 { font-size: 0.85rem; }
+      .class-grid { grid-template-columns: 1fr; }
+      .class-card { padding: 12px; }
+      .class-card h3 { font-size: 1rem; }
+      .class-card p { font-size: 0.78rem; }
+      .log-box, #systemLog {
+        height: 150px;
+        font-size: 0.72rem;
+        padding: 10px;
+      }
+      #gameCanvas {
+        max-height: 250px;
+      }
+      .level-bar-container {
+        padding: 6px 8px;
+      }
+      .level-bar-row { font-size: 0.72rem; }
+      .hp-bar-track, .xp-bar-track { height: 6px; }
+      #ability-list { grid-template-columns: 1fr; }
+      .ability-btn {
+        min-height: 48px;
+        padding: 10px 8px;
+        font-size: 0.78rem;
+      }
+      #combat-log {
+        height: 80px;
+        font-size: 0.68rem;
+      }
+      .btn { padding: 10px 12px; font-size: 0.82rem; min-height: 44px; }
+      .narrative-content { padding: 14px 16px; max-width: 95%; }
+      .narrative-title { font-size: 1.1rem; }
+      .narrative-desc { font-size: 0.8rem; }
+      .narrative-choice-btn {
+        padding: 10px;
+        font-size: 0.78rem;
+        min-height: 44px;
+      }
+      .narrative-lore { font-size: 0.75rem; padding: 8px 10px; }
+      #diceControls button { min-height: 44px; }
+      #mainMenuScreen .btn { min-height: 44px; padding: 12px 14px; font-size: 0.82rem; }
+    }
+
+    /* Landscape orientation: prioritize game area height */
+    @media (orientation: landscape) and (max-height: 500px) {
+      header { padding: 8px; }
+      h1 { font-size: 1.3rem; }
+      .main-container { gap: 8px; }
+      .panel { padding: 8px; }
+      .log-box, #systemLog { height: 80px; }
+      #combat-log { height: 60px; }
+      #gameCanvas { max-height: 45vh; }
+    }
+    /* ── Volume Control Panel ── */
+    #volumePanel {
+      position: fixed; top: 60px; right: 20px; z-index: 10000;
+      background: rgba(5, 8, 17, 0.95); border: 1px solid var(--cyan-glow);
+      border-radius: 4px; padding: 15px; width: 220px; font-family: var(--font-cyber);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+      display: none; flex-direction: column; gap: 10px;
+    }
+    #volumePanel h4 {
+      margin: 0 0 5px 0; font-size: 0.8rem;
+      color: var(--cyan-glow); letter-spacing: 1px;
+      border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+      padding-bottom: 5px;
+    }
+    #volumePanel .vol-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px;
+    }
+    #volumePanel .vol-label {
+      font-size: 0.7rem; color: var(--text-gray); min-width: 60px;
+    }
+    #volumePanel input[type="range"] {
+      flex: 1; height: 4px; background: rgba(0, 243, 255, 0.15);
+      border-radius: 2px; outline: none; -webkit-appearance: none;
+    }
+    #volumePanel input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 12px; height: 12px;
+      border-radius: 50%; background: var(--cyan-glow); cursor: pointer;
+    }
+    #volumePanel .vol-value {
+      font-size: 0.65rem; color: var(--cyan-glow); min-width: 30px;
+      text-align: right;
+    }
+    #volumePanel .mute-row {
+      display: flex; justify-content: center; margin-top: 5px;
+    }
+    #volumePanel .mute-row btn {
+      font-size: 1rem; padding: 5px 12px;
+    }
   </style>
 </head>
 <body>
@@ -286,7 +544,19 @@
   <header>
     <h1>AEGIS THREAT PROTOCOL</h1>
     <p style="color:var(--text-gray);margin-top:5px;">Earth-2142 Node-Infiltration Roguelike RPG</p>
+    <!-- Volume toggle button -->
+    <btn id="volumeToggleBtn" style="position:absolute;top:12px;right:80px;font-size:0.7rem;">♪ VOLUME</btn>
+    <btn id="settingsToggleBtn" style="position:absolute;top:12px;right:20px;font-size:0.7rem;">⚙ SETTINGS</btn>
   </header>
+
+  <!-- MOBILE AUDIO UNLOCK OVERLAY (iOS requires user gesture to start audio) -->
+  <div id="audio-unlock-overlay" style="display:none;">
+    <div class="unlock-content">
+      <div class="unlock-icon">⚡</div>
+      <div class="unlock-text">Touch Anywhere to Start</div>
+      <div class="unlock-sub">Initializing neural link...</div>
+    </div>
+  </div>
 
   <!-- MAIN MENU SCREEN -->
   <div id="mainMenuScreen" class="panel" style="max-width:800px;width:calc(100% - 30px);margin:30px auto;text-align:center;background-image:url('./cyber_menu_bg.png');background-size:cover;background-position:center;min-height:350px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;box-shadow:0 0 30px rgba(0,243,255,0.2),inset 0 0 20px rgba(0,0,0,0.8);">
@@ -323,10 +593,79 @@
         <div id="ability-panel">
           <h3>// COMBAT ABILITIES</h3>
           <div id="ability-list"></div>
-          <h3 style="margin-top:8px;margin-bottom:6px;">// COMBAT LOG</h3>
-          <div id="combat-log"></div>
+          <!-- ═══ BOSS PHASE INDICATOR ═══ -->
+        <div id="bossPhaseIndicator" style="display:none;background:rgba(255,0,85,0.08);border:2px solid var(--red-glow);border-radius:4px;padding:8px 12px;margin-bottom:10px;text-align:center;animation:boss-pulse 1s ease-in-out infinite alternate;">
+          <span id="bossPhaseText" style="color:var(--red-glow);font-family:var(--font-header);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;"></span>
+        </div>
+
+        <!-- ═══ LOGIC BOMB CHOICE SCREEN ═══ -->
+        <div id="logicBombScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:20000;justify-content:center;align-items:center;flex-direction:column;">
+          <div style="background:#0a0a0a;border:3px solid var(--purple-glow);border-radius:6px;padding:30px 35px;max-width:650px;width:90%;box-shadow:0 0 50px rgba(176,38,255,0.4);text-align:center;">
+            <h2 style="color:var(--purple-glow);font-family:var(--font-header);font-size:1.2rem;letter-spacing:3px;margin-bottom:6px;text-shadow:0 0 15px rgba(176,38,255,0.6);">★ FINAL CHOICE — LOGIC BOMB PROTOCOL ★</h2>
+            <p id="lbSubtitle" style="color:var(--text-gray);font-size:0.8rem;margin-bottom:20px;line-height:1.5;"></p>
+            <div id="lbChoices" style="display:flex;flex-direction:column;gap:12px;"></div>
+          </div>
+        </div>
+
+        <!-- ═══ SECTOR COMPLETE OVERLAY ═══ -->
+        <div id="sectorCompleteOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:20000;justify-content:center;align-items:center;flex-direction:column;">
+          <div style="background:#0a0a0a;border:3px solid var(--green-glow);border-radius:6px;padding:30px 40px;max-width:550px;width:90%;box-shadow:0 0 50px rgba(57,255,20,0.3);text-align:center;">
+            <h2 style="color:var(--green-glow);font-family:var(--font-header);font-size:1.3rem;letter-spacing:4px;margin-bottom:12px;text-shadow:0 0 20px rgba(57,255,20,0.5);">★ SECTOR COMPLETE ★</h2>
+            <p id="sectorCompleteMsg" style="color:var(--text-primary);font-size:0.9rem;margin-bottom:20px;line-height:1.5;"></p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+              <button id="nextSectorBtn" class="btn" style="padding:10px 20px;">NEXT SECTOR →</button>
+              <button id="continueBtn" class="btn" style="padding:10px 20px;border-color:var(--purple-glow);color:var(--purple-glow);">CONTINUE PLAYING</button>
+            </div>
+          </div>
         </div>
       </div>
+
+      <style>
+        @keyframes boss-pulse {
+          from { box-shadow: 0 0 10px rgba(255,0,85,0.3), inset 0 0 5px rgba(255,0,85,0.1); }
+          to { box-shadow: 0 0 25px rgba(255,0,85,0.6), inset 0 0 15px rgba(255,0,85,0.2); }
+        }
+        @keyframes sector-glow {
+          from { box-shadow: 0 0 10px rgba(57,255,20,0.2); }
+          to { box-shadow: 0 0 30px rgba(57,255,20,0.5); }
+        }
+        #sectorCompleteOverlay {
+          animation: sector-glow 2s ease-in-out infinite alternate;
+        }
+        .lb-choice-btn {
+          background: rgba(176,38,255,0.05); border: 2px solid var(--purple-glow); color: var(--text-primary);
+          padding: 14px 18px; font-family: var(--font-cyber); font-size: 0.82rem; line-height: 1.4;
+          border-radius: 4px; cursor: pointer; text-align: left; transition: all 0.2s;
+        }
+        .lb-choice-btn:hover {
+          background: rgba(176,38,255,0.12); box-shadow: 0 0 20px rgba(176,38,255,0.4); transform: translateX(4px);
+        }
+        .lb-choice-btn .lb-title {
+          font-family: var(--font-header); font-size: 0.9rem; letter-spacing: 2px; display: block; margin-bottom: 4px;
+        }
+        .lb-choice-btn .lb-desc {
+          font-size: 0.72rem; color: var(--text-gray); display: block;
+        }
+
+      <!-- ═══ VICTORY SCREEN ═══ -->
+      <div id="victoryScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:25000;justify-content:center;align-items:center;flex-direction:column;">
+        <div style="background:#0a0a0a;border:3px solid var(--green-glow);border-radius:6px;padding:40px 50px;max-width:600px;width:90%;box-shadow:0 0 80px rgba(57,255,20,0.5);text-align:center;">
+          <h2 style="color:var(--green-glow);font-family:var(--font-header);font-size:1.6rem;letter-spacing:5px;margin-bottom:12px;text-shadow:0 0 30px rgba(57,255,20,0.6);">★ ALL SECTORS CLEARED ★</h2>
+          <p style="color:var(--text-primary);font-size:1rem;margin-bottom:8px;">The Aegis Grid's surveillance net has been shattered across every sector.</p>
+          <p style="color:var(--text-gray);font-size:0.85rem;margin-bottom:20px;">Freedom is not yet won, but the Warden bleeds — and the Ghost Route lives on.</p>
+          <div style="border-top:1px solid rgba(57,255,20,0.3);padding-top:15px;margin-bottom:15px;font-size:0.85rem;color:var(--cyan-glow);line-height:1.8;">
+            <div>Total Runs Completed: <span id="victoryRuns">0</span></div>
+            <div>Total XP: <span id="victoryXP">0</span></div>
+            <div>Total Credits: <span id="victoryCredits">0</span></div>
+            <div>Achievements: <span id="victoryAchievements">0</span></div>
+          </div>
+          <button id="newGameBtn" class="btn" style="padding:12px 30px;">NEW GAME+</button>
+        </div>
+      </div>
+        .lb-choice-btn .lb-risk {
+          font-size: 0.68rem; color: var(--red-glow); display: block; margin-top: 4px;
+        }
+      </style>
     </div>
 
     <!-- RIGHT PANEL -->
@@ -411,6 +750,32 @@
   <!-- ═══ NARRATIVE POPUP (global, always present, shown via JS) ═══ -->
   <div id="narrative-popup"></div>
 
+  <!-- ═══ VOLUME CONTROL PANEL ═══ -->
+  <div id="volumeControlPanel" style="display:none;position:fixed;bottom:80px;right:15px;z-index:50000;background:rgba(10,10,10,0.95);border:2px solid var(--cyan-glow);border-radius:6px;padding:14px 18px;min-width:220px;box-shadow:0 0 20px rgba(0,243,255,0.2);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <h3 style="color:var(--cyan-glow);font-family:var(--font-header);font-size:0.75rem;letter-spacing:2px;margin:0;">// AUDIO CONTROLS</h3>
+      <button id="volumeCloseBtn" style="background:none;border:1px solid var(--text-gray);color:var(--text-gray);font-size:0.7rem;cursor:pointer;padding:2px 6px;border-radius:2px;">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <label style="display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;color:var(--text-gray);font-family:var(--font-cyber);">
+        <span>MASTER</span>
+        <input type="range" id="masterVolSlider" min="0" max="1" step="0.05" value="1" style="width:100px;accent-color:var(--cyan-glow);">
+        <span id="masterVolVal">100%</span>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;color:var(--text-gray);font-family:var(--font-cyber);">
+        <span>SFX</span>
+        <input type="range" id="sfxVolSlider" min="0" max="1" step="0.05" value="0.8" style="width:100px;accent-color:var(--cyan-glow);">
+        <span id="sfxVolVal">80%</span>
+      </label>
+      <label style="display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;color:var(--text-gray);font-family:var(--font-cyber);">
+        <span>MUSIC</span>
+        <input type="range" id="musicVolSlider" min="0" max="1" step="0.05" value="0.7" style="width:100px;accent-color:var(--cyan-glow);">
+        <span id="musicVolVal">70%</span>
+      </label>
+      <button id="muteBtn" style="background:rgba(255,255,255,0.05);border:1px solid var(--cyan-glow);color:var(--cyan-glow);font-size:0.7rem;padding:4px 8px;cursor:pointer;border-radius:2px;font-family:var(--font-cyber);">🔊 MUTE</button>
+    </div>
+  </div>
+
   <!-- Script initialization -->
   <script type="module">
     import { GameEngine } from './js/surveillance-rpg/game.js';
@@ -419,7 +784,9 @@
       drawGunner, drawMuscleman, drawOperative, drawDuelist, drawHacker,
       drawQuadRotor, drawDogMech, drawSecurityCamera, drawSafehouseIcon, drawTrapIcon, drawServerNodeIcon
     } from './js/surveillance-rpg/vector-art.js';
-    import { BootScene, BoardScene, CombatScene } from './js/surveillance-rpg/phaser-game.js';
+    import { BootScene, BoardScene, CombatScene, applyColorblindPalette, setLastColorblindPalette } from './js/surveillance-rpg/phaser-game.js';
+    import { initAudio, playSFX, playMusic, stopMusic, setVolume, toggleMute, resolveSFXForAbility } from './js/surveillance-rpg/sound.js';
+    import { SettingsScene, setGameEngineRef, getSettings, exportStatsJSON, resetAllData, COLORBLIND_PALETTES } from './js/surveillance-rpg/settings.js';
 
     const engine = new GameEngine();
     let animTime = 0;
@@ -455,6 +822,36 @@
     const hudHPBar = document.getElementById('hpBar');
     const hudHPText = document.getElementById('hpText');
     const hudXPText = document.getElementById('hudXPText');
+
+    // ── Audio unlock overlay (iOS requires user gesture to start audio) ──
+    const audioUnlockOverlay = document.getElementById('audio-unlock-overlay');
+    let audioUnlocked = false;
+
+    /**
+     * Initialize audio context and unlock touch interaction.
+     * Called when user taps the overlay on iOS/mobile.
+     */
+    function audioUnlockInit() {
+      if (audioUnlocked) return;
+      audioUnlocked = true;
+      // Initialize the sound system (Web Audio API)
+      try { initAudio(); } catch(e) {}
+      // Hide overlay
+      audioUnlockOverlay.style.display = 'none';
+      // Remove listener
+      audioUnlockOverlay.removeEventListener('click', audioUnlockInit);
+      audioUnlockOverlay.removeEventListener('touchstart', audioUnlockInit);
+    }
+
+    // Show overlay on touch devices; click/tap to dismiss
+    function isTouchDevice() {
+      return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+    }
+    if (isTouchDevice()) {
+      audioUnlockOverlay.style.display = 'flex';
+      audioUnlockOverlay.addEventListener('click', audioUnlockInit);
+      audioUnlockOverlay.addEventListener('touchstart', audioUnlockInit, { passive: true });
+    }
 
     // ── Shop: bind existing buttons ──
     document.getElementById('buyNanoArmor').addEventListener('click', () => {
@@ -661,6 +1058,13 @@
 
     window.showNarrativePopup = function(data) {
       if (!data) return;
+      
+      // Logic Bomb Choice: use dedicated overlay instead of standard narrative popup
+      if (data.type === 'logicBombChoice') {
+        window.showLogicBombScreen(data);
+        return;
+      }
+      
       const popup = narrativePopup;
       let choicesHTML = '';
       if (data.choices && data.choices.length > 0) {
@@ -694,6 +1098,166 @@
       narrativePopup.style.display = 'none';
       narrativePopup.innerHTML = '';
     };
+
+    // ═══ BOSS PHASE INDICATOR ═══
+    window.updateBossPhaseUI = function(phase, hpPct) {
+      const indicator = document.getElementById('bossPhaseIndicator');
+      const text = document.getElementById('bossPhaseText');
+      if (!indicator || !text) return;
+      if (phase === 3 && hpPct > 0) {
+        indicator.style.display = 'block';
+        text.textContent = '⚠ DESPERATE MODE — HP CRITICAL';
+      } else {
+        indicator.style.display = 'none';
+      }
+    };
+
+    // ═══ LOGIC BOMB CHOICE SCREEN ═══
+    window.showLogicBombScreen = function(data) {
+      const screen = document.getElementById('logicBombScreen');
+      const subtitle = document.getElementById('lbSubtitle');
+      const choices = document.getElementById('lbChoices');
+      if (!screen || !subtitle || !choices) return;
+      
+      if (data && data.title) {
+        subtitle.textContent = data.title || subtitle.textContent;
+      }
+      if (data && data.desc) {
+        const descEl = subtitle.parentNode.querySelector('.narrative-desc') || subtitle;
+        descEl.textContent = data.desc || descEl.textContent;
+      }
+      
+      // Build choices from data if provided, otherwise use defaults
+      let choicesHTML = '';
+      if (data && data.choices && data.choices.length > 0) {
+        choicesHTML = data.choices.map(ch => {
+          const risk = ch.risk ? `<span class="lb-risk">${ch.risk}</span>` : '';
+          return `<button class="lb-choice-btn" onclick="window.triggerLogicBomb('${ch.key}')">
+            <span class="lb-title">${ch.label}</span>
+            <span class="lb-desc">${ch.desc}</span>
+            ${risk}
+          </button>`;
+        }).join('');
+      } else {
+        // Default choices if not provided via data
+        choicesHTML = `
+          <button class="lb-choice-btn" onclick="window.triggerLogicBomb('alpha')">
+            <span class="lb-title">⚡ LOGIC BOMB: ALPHA</span>
+            <span class="lb-desc">Overload the Warden's decision matrix. 40-80 DMG. Leaves a backdoor — unlocks "The Ghost Route's Secret" lore.</span>
+          </button>
+          <button class="lb-choice-btn" onclick="window.triggerLogicBomb('beta')">
+            <span class="lb-title">🔒 LOGIC BOMB: BETA</span>
+            <span class="lb-desc">Corrupt the Warden's perception matrix. 50-70 DMG. Disables all boss abilities for the rest of the fight. Unlocks "Warden's Doubt" lore.</span>
+          </button>
+          <button class="lb-choice-btn" onclick="window.triggerLogicBomb('gamma')">
+            <span class="lb-title">☠️ LOGIC BOMB: GAMMA</span>
+            <span class="lb-desc">Distributed DoS across Grid nodes. 30-60 DMG. Reduces your max HP by 30% permanently. Unlocks achievement "Sacrifice Play".</span>
+            <span class="lb-risk">⚠ WARNING: Irreversible HP penalty</span>
+          </button>
+        `;
+      }
+      
+      choices.innerHTML = choicesHTML;
+      screen.style.display = 'flex';
+    };
+
+    window.hideLogicBombScreen = function() {
+      const screen = document.getElementById('logicBombScreen');
+      if (screen) screen.style.display = 'none';
+    };
+
+    window.triggerLogicBomb = function(type) {
+      window.hideLogicBombScreen();
+      if (engine.logicBombChoice) {
+        engine.logicBombChoice(type);
+      }
+    };
+
+    // ═══ SECTOR COMPLETE OVERLAY ═══
+    window.showSectorComplete = function(sectorNum, bossName) {
+      const overlay = document.getElementById('sectorCompleteOverlay');
+      const msg = document.getElementById('sectorCompleteMsg');
+      const nextBtn = document.getElementById('nextSectorBtn');
+      const continueBtn = document.getElementById('continueBtn');
+      if (!overlay || !msg) return;
+      
+      msg.innerHTML = `${bossName || 'The Warden'} neutralized!<br>• +500 credits (sector bonus)<br>• Core Injected — Sector ${sectorNum} cleared<br>• Achievements updated<br>• Lore entries unlocked`; 
+      
+      if (sectorNum >= 3) {
+        nextBtn.textContent = 'VIEW FINAL VICTORY →';
+        nextBtn.style.display = 'inline-block';
+      } else {
+        nextBtn.style.display = 'inline-block';
+        nextBtn.textContent = 'SECTOR ' + (sectorNum + 1) + ' →';
+      }
+      continueBtn.style.display = 'inline-block';
+      
+      overlay.style.display = 'flex';
+    };
+
+    window.hideSectorComplete = function() {
+      const overlay = document.getElementById('sectorCompleteOverlay');
+      if (overlay) overlay.style.display = 'none';
+    };
+
+    window.nextSector = function() {
+      window.hideSectorComplete();
+      if (engine.startNextSector) {
+        engine.startNextSector();
+      } else {
+        // Fallback: restart with next sector
+        window.location.reload();
+      }
+    };
+
+
+    window.continuePlaying = function() {
+      window.hideSectorComplete();
+      if (engine.showBoardScreen) {
+        engine.showBoardScreen();
+      } else {
+        // Show board screen
+        const boardScreen = document.getElementById('boardScreen');
+        if (boardScreen) boardScreen.classList.add('active');
+      }
+    };
+
+    // ═══ VICTORY SCREEN ═══
+    window.showVictoryScreen = function(engine) {
+      const screen = document.getElementById('victoryScreen');
+      if (!screen) return;
+      
+      const runs = engine.totalRunsCompleted || 0;
+      const xp = engine.totalLevel || 0;
+      const credits = engine.totalCreditsEarned || 0;
+      const ac = JSON.parse(localStorage.getItem('aegis_achievements') || '[]');
+      
+      document.getElementById('victoryRuns').textContent = runs;
+      document.getElementById('victoryXP').textContent = xp;
+      document.getElementById('victoryCredits').textContent = credits;
+      document.getElementById('victoryAchievements').textContent = ac.length;
+      
+      screen.style.display = 'flex';
+    };
+
+    window.newGamePlus = function() {
+      const screen = document.getElementById('victoryScreen');
+      if (screen) screen.style.display = 'none';
+      window.location.reload();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const newGameBtn = document.getElementById('newGameBtn');
+      if (newGameBtn) newGameBtn.addEventListener('click', window.newGamePlus);
+    });
+
+    // Wire up sector complete buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      const nextBtn = document.getElementById('nextSectorBtn');
+      if (nextBtn) nextBtn.addEventListener('click', window.nextSector);
+      const continueBtn = document.getElementById('continueBtn');
+      if (continueBtn) continueBtn.addEventListener('click', window.continuePlaying);
+    });
 
     window.updateLevelBar = function(level, xp, xpNeeded, hp, hpMax, credits) {
       const hpPct = Math.max(0, Math.min(100, (hp / hpMax) * 100));
@@ -780,7 +1344,44 @@
       // Narrative popup sync
       if (engine.narrativePopup && engine.narrativePopup.title) {
         const title = engine.narrativePopup.title;
-        if (title !== lastNarrativeTitle) {
+        // ── Boss Phase UI Indicator ──
+      if (engine.gameState === 'combat' && engine.combatState && engine.combatState.isBoss) {
+        const phase = engine.combatState.wardenPhase || 1;
+        const hpPct = engine.combatState.enemy ? Math.round((engine.combatState.enemy.hp / engine.combatState.enemy.hpMax) * 100) : 0;
+        window.updateBossPhaseUI(phase, hpPct);
+      }
+
+      // ── Logic Bomb Choice Screen ──
+      if (engine.narrativePopup && engine.narrativePopup.type === 'logicBombChoice') {
+        window.showLogicBombScreen(engine.narrativePopup);
+      } else if (engine.narrativePopup && engine.narrativePopup.type !== 'logicBombChoice') {
+        window.hideLogicBombScreen();
+      }
+
+      // ── Sector Complete Overlay ──
+      if (engine.gameState === 'victory' && engine.combatState && engine.combatState.isBoss && engine.combatState.logicBombTriggered) {
+        // Only show once per sector completion
+        if (!engine._sectorShown) {
+          engine._sectorShown = true;
+          const sector = engine.activeSector || 1;
+          const bossName = engine.combatState.enemy ? engine.combatState.enemy.name : 'The Warden';
+          window.showSectorComplete(sector, bossName);
+        }
+      } else if (engine.gameState !== 'victory' && engine._sectorShown) {
+        engine._sectorShown = false;
+        window.hideSectorComplete();
+      }
+
+      // ── Victory Screen ──
+      if (engine.gameState === 'victory' && engine._sectorShown) {
+        // Check if all sectors complete (sector 3+ cleared)
+        if (engine.activeSector >= 3) {
+          window.showVictoryScreen(engine);
+        }
+      }
+
+      // Only show narrative popup for non-logicBombChoice types
+      if (title !== lastNarrativeTitle && engine.narrativePopup && engine.narrativePopup.type !== 'logicBombChoice') {
           lastNarrativeTitle = title;
           const np = engine.narrativePopup;
           const choices = np.choices || [];
@@ -834,23 +1435,376 @@
     const savedCredits = localStorage.getItem('aegis_credits');
     if (savedCredits) engine.credits = parseInt(savedCredits);
 
-    // ── Phaser game config ──
+    // ── Phaser game config (responsive with FIT scaling) ──
+    const scaleConfig = {
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: 800,
+      height: 400,
+      scale: {
+        // Re-orient on device orientation change (portrait/landscape)
+        orientation: 'any',
+        // Resolve scale changes automatically
+        resolution: window.devicePixelRatio || 1,
+        autoGrow: true,
+        resize: true
+      },
+      scale: null  // will be set after game creation
+    };
+
+    // ── Mobile: Detect touch device & show unlock overlay ──
+    const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                     (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+
+    function initGameAudio() {
+      try {
+        initAudio();
+        if (ctx && ctx.state === 'suspended') ctx.resume();
+        playSFX('ui_click');
+        document.getElementById('audio-unlock-overlay').style.display = 'none';
+        if (!document.getElementById('mainMenuScreen').classList.contains('active')) {
+          document.getElementById('mainMenuScreen').style.display = 'flex';
+        }
+        document.body.classList.add('audio-unlocked');
+      } catch(e) {
+        console.warn('Audio unlock failed:', e);
+      }
+    }
+
+    const unlockOverlay = document.getElementById('audio-unlock-overlay');
+    if (unlockOverlay && isMobile) {
+      unlockOverlay.style.display = 'flex';
+      // Handle both tap and click (cross-platform)
+      unlockOverlay.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        initGameAudio();
+      }, { passive: false });
+      unlockOverlay.addEventListener('click', function(e) {
+        e.preventDefault();
+        initGameAudio();
+      });
+    }
+
+    function onGameResize() {
+      if (!window._aegisGame) return;
+      const canvas = gameCanvas;
+      const newW = canvas.clientWidth;
+      const newH = canvas.clientHeight;
+      // Only update if dimensions actually changed
+      if (newW > 0 && newH > 0 && (newW !== window._aegisGame.config.width || newH !== window._aegisGame.config.height)) {
+        window._aegisGame.setSize(newW, newH);
+      }
+      // Trigger VFX re-sync for combat scene
+      if (window._aegisCombatScene && window._aegisCombatScene._onResize) {
+        window._aegisCombatScene._onResize();
+      }
+    }
+
     const config = {
       type: Phaser.CANVAS,
       width: 800,
       height: 400,
       canvas: gameCanvas,
       physics: { default: 'arcade' },
-      scene: [BootScene, BoardScene, CombatScene]
+      scale: scaleConfig,
+      scene: [BootScene, BoardScene, CombatScene, SettingsScene]
     };
+
+    // ── Touch prevention on game canvas only ──
+    // Prevent touch scrolling on the Phaser canvas while allowing button taps elsewhere
+    gameCanvas.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+    gameCanvas.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+    gameCanvas.addEventListener('touchend', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+
+    // ── Roll dice button: support both click and touch ──
+    const rollBtn = document.getElementById('rollBtn');
+    if (rollBtn) {
+      rollBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        rollBtn.click();
+      }, { passive: false });
+      rollBtn.addEventListener('touchcancel', function(e) {
+        e.preventDefault();
+      }, { passive: false });
+    }
 
     const originalInit = engine.initPlayer;
     engine.initPlayer = function(classKey) {
       originalInit.call(engine, classKey);
       const game = new Phaser.Game(config);
+      window._aegisGame = game;
+      window._aegisCombatScene = game.scenes.get('CombatScene');
+      scaleConfig.scale = game.scale;
+      window.addEventListener('resize', onGameResize);
       game.scene.start('BootScene', { engine: engine });
+      // Pass engine ref to settings for stats export
+      setGameEngineRef(engine);
+
+      // ── Sync initial colorblind palette ──
+      const initSettings = getSettings();
+      if (initSettings && initSettings.colorblind && initSettings.colorblind !== 'off') {
+        const palette = COLORBLIND_PALETTES[initSettings.colorblind];
+        if (palette) {
+          applyColorblindPalette(palette);
+          setLastColorblindPalette(palette);
+          game.events.emit('aegis_colorblind_change', palette);
+        }
+      }
     };
+
+    // ── Volume Controls ──
+    const volumePanel = document.getElementById('volumePanel');
+    const volumeToggleBtn = document.getElementById('volumeToggleBtn');
+    let volumePanelOpen = false;
+    let masterVolume = parseFloat(localStorage.getItem('aegis_vol_master')) || 0.7;
+    let sfxVolume = parseFloat(localStorage.getItem('aegis_vol_sfx')) || 0.8;
+    let musicVolume = parseFloat(localStorage.getItem('aegis_vol_music')) || 0.5;
+    let isMuted = localStorage.getItem('aegis_muted') === 'true';
+
+    function applyVolumeSettings() {
+      try {
+        setVolume('master', masterVolume);
+        setVolume('sfx', sfxVolume);
+        setVolume('music', musicVolume);
+        if (isMuted) {
+          try { toggleMute(true); } catch(e) {}
+        } else {
+          try { toggleMute(false); } catch(e) {}
+        }
+      } catch(e) {}
+      // Update sliders
+      const mSlider = document.getElementById('masterVol');
+      const sSlider = document.getElementById('sfxVol');
+      const muiSlider = document.getElementById('musicVol');
+      const muteBtn = document.getElementById('muteBtn');
+      if (mSlider) mSlider.value = masterVolume;
+      if (sSlider) sSlider.value = sfxVolume;
+      if (muiSlider) muiSlider.value = musicVolume;
+      if (muteBtn) {
+        muteBtn.textContent = isMuted ? '🔇' : '🔊';
+        muteBtn.disabled = isMuted;
+      }
+    }
+
+    if (volumeToggleBtn) {
+      volumeToggleBtn.addEventListener('click', () => {
+        volumePanelOpen = !volumePanelOpen;
+        volumePanel.style.display = volumePanelOpen ? 'flex' : 'none';
+      });
+    }
+
+    if (volumePanel) {
+      const masterSlider = document.getElementById('masterVol');
+      const sfxSlider = document.getElementById('sfxVol');
+      const musicSlider = document.getElementById('musicVol');
+      const muteBtn = document.getElementById('muteBtn');
+
+      if (masterSlider) {
+        masterSlider.value = masterVolume;
+        masterSlider.addEventListener('input', () => {
+          masterVolume = parseFloat(masterSlider.value);
+          localStorage.setItem('aegis_vol_master', masterVolume.toString());
+          // Also update aegis_settings for consistency
+          const s = getSettings();
+          if (s) { s.masterVolume = masterVolume; try { localStorage.setItem('aegis_settings', JSON.stringify(s)); } catch(e) {} }
+          applyVolumeSettings();
+          const el = document.getElementById('masterVolVal');
+          if (el) el.textContent = Math.round(masterVolume * 100) + '%';
+        });
+      }
+      if (sfxSlider) {
+        sfxSlider.value = sfxVolume;
+        sfxSlider.addEventListener('input', () => {
+          sfxVolume = parseFloat(sfxSlider.value);
+          localStorage.setItem('aegis_vol_sfx', sfxVolume.toString());
+          const s = getSettings();
+          if (s) { s.sfxVolume = sfxVolume; try { localStorage.setItem('aegis_settings', JSON.stringify(s)); } catch(e) {} }
+          applyVolumeSettings();
+          const el = document.getElementById('sfxVolVal');
+          if (el) el.textContent = Math.round(sfxVolume * 100) + '%';
+        });
+      }
+      if (musicSlider) {
+        musicSlider.value = musicVolume;
+        musicSlider.addEventListener('input', () => {
+          musicVolume = parseFloat(musicSlider.value);
+          localStorage.setItem('aegis_vol_music', musicVolume.toString());
+          const s = getSettings();
+          if (s) { s.musicVolume = musicVolume; try { localStorage.setItem('aegis_settings', JSON.stringify(s)); } catch(e) {} }
+          applyVolumeSettings();
+          const el = document.getElementById('musicVolVal');
+          if (el) el.textContent = Math.round(musicVolume * 100) + '%';
+        });
+      }
+      if (muteBtn) {
+        muteBtn.textContent = isMuted ? '🔇' : '🔊';
+        muteBtn.addEventListener('click', () => {
+          isMuted = !isMuted;
+          localStorage.setItem('aegis_muted', isMuted.toString());
+          const s = getSettings();
+          if (s) { s.isMuted = isMuted; try { localStorage.setItem('aegis_settings', JSON.stringify(s)); } catch(e) {} }
+          try { toggleMute(isMuted); } catch(e) {}
+          muteBtn.textContent = isMuted ? '🔊' : '🔇';
+          muteBtn.disabled = !isMuted;
+        });
+        if (isMuted) {
+          muteBtn.textContent = '🔊';
+          muteBtn.disabled = false;
+        }
+      }
+    }
+
+    // Apply saved settings
+    applyVolumeSettings();
   </script>
+
+  <script>
+    // ── DOM Settings Panel ──
+    const settingsPanel = document.createElement('div');
+    settingsPanel.id = 'settingsPanel';
+    settingsPanel.style.cssText = 'display:none;position:fixed;top:60px;right:20px;width:280px;background:rgba(10,22,38,0.97);border:1px solid rgba(0,243,255,0.25);border-radius:4px;padding:15px;z-index:100;font-family:Share Tech Mono,monospace;backdrop-filter:blur(8px);';
+    settingsPanel.innerHTML = `
+      <h4 style="color:#00f3ff;margin-bottom:12px;font-size:0.85rem;letter-spacing:2px;">⚙ SETTINGS</h4>
+      <div style="margin-bottom:10px;">
+        <label style="color:#7d96b4;font-size:0.75rem;">Difficulty</label><br>
+        <select id="domDifficulty" style="width:100%;background:#0a1626;border:1px solid rgba(0,243,255,0.3);color:#e2f1ff;padding:4px 8px;border-radius:3px;font-size:0.75rem;margin-top:3px;">
+          <option value="easy">Easy (-20% enemy stats)</option>
+          <option value="medium" selected>Medium (Default)</option>
+          <option value="hard">Hard (+30% enemy stats)</option>
+          <option value="insane">Insane (+60% enemy stats)</option>
+        </select>
+        <div style="color:#556;font-size:0.65rem;margin-top:3px;">Applies on new run, not mid-run</div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label style="color:#7d96b4;font-size:0.75rem;">Colorblind Mode</label><br>
+        <select id="domColorblind" style="width:100%;background:#0a1626;border:1px solid rgba(0,243,255,0.3);color:#e2f1ff;padding:4px 8px;border-radius:3px;font-size:0.75rem;margin-top:3px;">
+          <option value="off" selected>Off (Standard)</option>
+          <option value="protanopia">Protanopia</option>
+          <option value="deuteranopia">Deuteranopia</option>
+          <option value="tritanopia">Tritanopia</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label style="color:#7d96b4;font-size:0.75rem;">Text Speed</label><br>
+        <select id="domTextSpeed" style="width:100%;background:#0a1626;border:1px solid rgba(0,243,255,0.3);color:#e2f1ff;padding:4px 8px;border-radius:3px;font-size:0.75rem;margin-top:3px;">
+          <option value="fast">Fast</option>
+          <option value="normal" selected>Normal</option>
+          <option value="slow">Slow</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label style="color:#7d96b4;font-size:0.75rem;">Data Management</label><br>
+        <div style="display:flex;gap:6px;margin-top:3px;">
+          <button id="domExportStats" class="btn" style="flex:1;padding:4px 6px;font-size:0.65rem;">Export Stats</button>
+          <button id="domResetData" class="btn" style="flex:1;padding:4px 6px;font-size:0.65rem;border-color:#ff0055;color:#ff0055;">Reset</button>
+        </div>
+      </div>
+      <div style="font-size:0.6rem;color:#556;margin-top:8px;line-height:1.4;">
+        Phaser game scene settings are available inside the game.
+        DOM changes save to <code style="color:#00f3ff;">aegis_settings</code> localStorage.
+      </div>
+    `;
+    document.body.appendChild(settingsPanel);
+
+    // Toggle panel
+    const settingsToggleBtn = document.getElementById('settingsToggleBtn');
+    let settingsPanelOpen = false;
+    if (settingsToggleBtn) {
+      settingsToggleBtn.addEventListener('click', () => {
+        settingsPanelOpen = !settingsPanelOpen;
+        settingsPanel.style.display = settingsPanelOpen ? 'flex' : 'none';
+        // Sync DOM values with current settings
+        const s = getSettings();
+        if (s) {
+          document.getElementById('domDifficulty').value = s.difficulty;
+          document.getElementById('domColorblind').value = s.colorblind;
+          document.getElementById('domTextSpeed').value = s.textSpeed;
+        }
+      });
+    }
+
+    // DOM settings handlers
+    const domDiff = document.getElementById('domDifficulty');
+    if (domDiff) {
+      domDiff.addEventListener('change', () => {
+        const s = getSettings();
+        if (s) { s.difficulty = domDiff.value; try { localStorage.setItem('aegis_settings', JSON.stringify(s)); } catch(e) {} }
+      });
+    }
+
+    const domCB = document.getElementById('domColorblind');
+    if (domCB) {
+      domCB.addEventListener('change', () => {
+        const s = getSettings();
+        if (s) { s.colorblind = domCB.value; try { localStorage.setItem('aegis_settings', JSON.stringify(s)); } catch(e) {} }
+        // Apply immediately to game if running
+        if (window._aegisGame) {
+          const palette = domCB.value === 'off' ? null : COLORBLIND_PALETTES[domCB.value];
+          window._aegisColorblindPalette = palette;
+          window._aegisGame.events.emit('aegis_colorblind_change', palette);
+        }
+      });
+    }
+
+    const domTS = document.getElementById('domTextSpeed');
+    if (domTS) {
+      domTS.addEventListener('change', () => {
+        const s = getSettings();
+        if (s) { s.textSpeed = domTS.value; try { localStorage.setItem('aegis_settings', JSON.stringify(s)); } catch(e) {} }
+        try { window._aegisGame.events.emit('aegis_text_speed', domTS.value); } catch(e) {}
+      });
+    }
+
+    const domExportBtn = document.getElementById('domExportStats');
+    if (domExportBtn) {
+      domExportBtn.addEventListener('click', () => {
+        exportStatsJSON(engine);
+        domExportBtn.textContent = 'Exported!';
+        setTimeout(() => { domExportBtn.textContent = 'Export Stats'; }, 2000);
+      });
+    }
+
+    const domResetBtn = document.getElementById('domResetData');
+    if (domResetBtn) {
+      domResetBtn.addEventListener('click', () => {
+        if (confirm('Reset ALL game data? This cannot be undone.')) {
+          resetAllData();
+          domResetBtn.textContent = 'Reset!';
+          setTimeout(() => { domResetBtn.textContent = 'Reset'; }, 2000);
+        }
+      });
+    }
+  </script>
+
+  <!-- Volume Control Panel -->
+  <div id="volumePanel">
+    <h4>♪ VOLUME</h4>
+    <div class="vol-row">
+      <span class="vol-label">Master</span>
+      <input type="range" id="masterVol" min="0" max="1" step="0.01" value="0.7">
+      <span class="vol-value" id="masterVolVal">70%</span>
+    </div>
+    <div class="vol-row">
+      <span class="vol-label">SFX</span>
+      <input type="range" id="sfxVol" min="0" max="1" step="0.01" value="0.8">
+      <span class="vol-value" id="sfxVolVal">80%</span>
+    </div>
+    <div class="vol-row">
+      <span class="vol-label">Music</span>
+      <input type="range" id="musicVol" min="0" max="1" step="0.01" value="0.5">
+      <span class="vol-value" id="musicVolVal">50%</span>
+    </div>
+    <div class="mute-row">
+      <btn id="muteBtn" style="padding:5px 12px;font-size:1rem;">🔇</btn>
+    </div>
+  </div>
 
 </body>
 </html>
