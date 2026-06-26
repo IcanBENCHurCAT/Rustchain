@@ -38,6 +38,21 @@ python3 janitor/janitor.py dump        # Show all flagged
 python3 janitor/janitor.py dump <name> # Show specific item
 ```
 
+### Cron Automation (Weekly Sweep)
+
+A weekly cron job runs `janitor.py sweep` automatically every Sunday at 03:00 Eastern.
+
+```bash
+python3 janitor/cron_setup.py              # Install the cron job
+python3 janitor/cron_setup.py --dry-run    # Preview without changes
+python3 janitor/cron_setup.py --uninstall  # Remove the cron job
+python3 janitor/cron_setup.py --status     # Show cron state
+```
+
+The cron output is logged to `janitor/sweep.log`.
+
+After a weekly sweep, review the report and run `/janitor sweep --live` to approve deletions.
+
 ## Configuration
 
 Edit `config.yaml`:
@@ -58,9 +73,11 @@ Edit `config.yaml`:
 
 ```
 janitor/
-├── janitor.py       # Main Janitor class + CLI
+├── janitor.py       # Main Janitor class + CLI (scan, report, execute)
+├── cron_setup.py    # Cron job management (install/enable/uninstall)
 ├── config.yaml      # Configuration (age thresholds, protected paths)
 ├── audit.log        # Audit trail of live deletions (auto-created)
+├── sweep.log        # Cron job output log (auto-created)
 ├── DESIGN.md        # Architecture document
 └── README.md        # This file
 ```
@@ -75,21 +92,9 @@ The main agent should also:
 2. Pass them to `Janitor.populate_workboard_status()`
 3. Format and return the report
 
-## Cron Automation
+## Cleanup Queue (Future)
 
-A cron job runs every Monday at 09:00 Eastern (14:00 UTC):
-
-### Installing the cron job
-
-```bash
-bash setup_cron.sh          # Install
-bash setup_cron.sh --remove # Remove
-```
-
-This adds a crontab entry that runs `janitor.py sweep` and logs output to `sweep.log`.
-
-### How it works
-
-1. Crontab triggers `janitor.py sweep` weekly
-2. A sweep report is written to `sweep.log`
-3. Review the report and run `/janitor sweep --live` to approve deletions
+For added safety, consider staging deletions:
+1. Move items to `~/janitor-queue/` instead of deleting
+2. Wait 7 days, then purge
+3. Provides a recovery window before permanent deletion

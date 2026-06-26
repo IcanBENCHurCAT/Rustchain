@@ -125,6 +125,18 @@ def test_python_syntax():
     print_pass("Python syntax is valid")
 
 
+def test_cron_syntax():
+    cron_py = JANITOR_DIR / "cron_setup.py"
+    assert cron_py.exists(), "cron_setup.py not found"
+
+    result = subprocess.run(
+        [sys.executable, "-m", "py_compile", str(cron_py)],
+        capture_output=True, text=True, timeout=10
+    )
+    assert result.returncode == 0, f"Cron setup syntax check failed: {result.stderr}"
+    print_pass("cron_setup.py syntax is valid")
+
+
 def main():
     quick = "--quick" in sys.argv
 
@@ -137,6 +149,7 @@ def main():
         print_info(f"Python: {sys.executable} ({sys.version.split()[0]})")
 
         tests.append(("Python syntax", test_python_syntax))
+        tests.append(("Cron syntax", test_cron_syntax))
         tests.append(("Config file", test_config_file))
         tests.append(("CLI help", test_cli_help))
 
