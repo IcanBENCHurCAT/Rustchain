@@ -228,9 +228,9 @@ export const CLASSES = {
     abilities: [
       { id: "double_tap", name: "Double Tap", desc: "Two rapid strikes for 15-22 total damage", type: "attack", minPower: 12, maxPower: 22, cooldown: 0, maxCooldown: 0, cost: 0 },
       { id: "targeting_matrix", name: "Targeting Matrix", desc: "Lock-on shot for 22-30 damage. Ignores 30% enemy defense.", type: "attack", minPower: 22, maxPower: 30, cooldown: 2, maxCooldown: 3, cost: 0 },
-      { id: "cover_fire", name: "Cover Fire", desc: "Suppressive barrage. Deals 8-12 damage and forces enemy to skip next turn.", type: "attack", minPower: 8, maxPower: 12, cooldown: 3, maxCooldown: 4, cost: 0 },
+      { id: "cover_fire", name: "Cover Fire", desc: "Suppressive barrage. Deals 10-16 damage and forces enemy to skip next turn.", type: "attack", minPower: 10, maxPower: 16, cooldown: 3, maxCooldown: 4, cost: 0 },
       { id: "tactical_scan", name: "Tactical Scan", desc: "Reveals weak points. Next attack deals +50% critical chance for 2 turns.", type: "buff", effect: "crit_up", duration: 2, cooldown: 4, maxCooldown: 5, cost: 0 },
-      { id: "overcharge_rail", name: "Overcharge Rail", desc: "Overcharge your railgun. Deals 30-40 damage but costs 15 HP.", type: "attack", minPower: 30, maxPower: 40, cooldown: 0, maxCooldown: 5, cost: 15 },
+      { id: "overcharge_rail", name: "Overcharge Rail", desc: "Overcharge your railgun. Deals 25-35 damage but costs 10 HP. [Flavor: The railgun's capacitors are pushed past safe limits — devastating but taxing on the weapon's systems.]", type: "attack", minPower: 25, maxPower: 35, cooldown: 0, maxCooldown: 5, cost: 10 },
       { id: "smart_ammo", name: "Smart Ammo", desc: "Piercing round that reduces enemy DEF by 20% for 3 turns. Deals 16-24 damage. [Flavor: Micro-guided munitions that home in on armor weak points.]", type: "attack", minPower: 16, maxPower: 24, cooldown: 0, maxCooldown: 3, cost: 0, armorPierce: 0.20, armorPierceTurns: 3 },
       { id: "shield_penetrator", name: "Shield Penetrator", desc: "Concentrated beam that ignores 50% enemy DEF. Deals 20-30 damage. [Flavor: Aegis-grade focused energy beam designed to cut through shield plating.]", type: "attack", minPower: 20, maxPower: 30, cooldown: 2, maxCooldown: 3, cost: 0, ignoreDefense: 0.50 },
       { id: "barrage", name: "Barrage", desc: "Sweeps gunfire across all enemies for 6-10 damage each. 2-turn cooldown. [Flavor: The Gattling gun roars to life, shredding everything in its path.]", type: "attack", minPower: 6, maxPower: 10, cooldown: 2, maxCooldown: 3, cost: 0, multiTarget: true }
@@ -250,9 +250,9 @@ export const CLASSES = {
     abilities: [
       { id: "shield_bash", name: "Shield Bash", desc: "Heavy melee strike for 14-22 damage. Also staggers enemy (reduces their next damage by 50%).", type: "attack", minPower: 14, maxPower: 22, cooldown: 0, maxCooldown: 0, cost: 0 },
       { id: "overclock_gauntlets", name: "Overclock Gauntlets", desc: "Charge your gauntlets for a devastating 24-34 strike.", type: "attack", minPower: 24, maxPower: 34, cooldown: 2, maxCooldown: 3, cost: 0 },
-      { id: "carbon_armor", name: "Carbon Armor", desc: "Deploy hardening field. Reduces incoming damage by 40% for 3 turns.", type: "buff", effect: "defense_up", duration: 3, cooldown: 4, maxCooldown: 5, cost: 0 },
-      { id: "iron_will", name: "Iron Will", desc: "Fortify your stance. Regain 12-18 HP and gain a shield that absorbs 15 damage.", type: "heal", healMin: 12, healMax: 18, shield: 15, cooldown: 4, maxCooldown: 5, cost: 0 },
-      { id: "seismic_stomp", name: "Seismic Stomp", desc: "Ground-shattering slam for 28-38 damage. Also stuns enemy for 1 turn.", type: "attack", minPower: 28, maxPower: 38, cooldown: 0, maxCooldown: 5, cost: 0 },
+      { id: "carbon_armor", name: "Carbon Armor", desc: "Deploy hardening field. Reduces incoming damage by 25% for 2 turns. [Flavor: Nano-carbon hardening field extends across the Juggernaut's plating — not impenetrable, but significantly reinforced.]", type: "buff", effect: "defense_up", duration: 2, cooldown: 4, maxCooldown: 5, cost: 0 },
+      { id: "iron_will", name: "Iron Will", desc: "Fortify your stance. Regain 12-18 HP. [Flavor: The Juggernaut plants its feet and braces — a deep breath and the pain fades as iron will reshapes flesh and steel.]", type: "heal", healMin: 12, healMax: 18, cooldown: 4, maxCooldown: 5, cost: 0 },
+      { id: "seismic_stomp", name: "Seismic Stomp", desc: "Ground-shattering slam for 25-33 damage. Also stuns enemy for 1 turn.", type: "attack", minPower: 25, maxPower: 33, cooldown: 0, maxCooldown: 5, cost: 0 },
       { id: "power_slam", name: "Power Slam", desc: "Ground-slam AoE that deals 18-28 damage and stuns all enemies for 1 turn. [Flavor: The ground shakes as the Juggernaut slams fists into the earth, sending shockwaves through every enemy.]", type: "attack", minPower: 18, maxPower: 28, cooldown: 3, maxCooldown: 4, cost: 0, multiTarget: true, stun: 1 },
       { id: "war_cry", name: "War Cry", desc: "Fearsome shout that buffs party ATK by 25% for 3 turns. [Flavor: A primal roar that echoes through the Grid — allies feel their strength surge as the Warden's machines hesitate.]", type: "buff", effect: "war_cry", duration: 3, cooldown: 4, maxCooldown: 5, cost: 0 },
       { id: "shield_wall", name: "Shield Wall", desc: "Raises a barrier that blocks the next incoming attack (up to 30 damage) and gains Shield buff. 2-turn cooldown. [Flavor: Reinforced plating extends from the shoulders, forming an impenetrable wall of carbon-alloy.]", type: "buff", effect: "shield_wall", duration: 1, cooldown: 2, maxCooldown: 3, cost: 0, shield: 30 }
@@ -314,14 +314,15 @@ export const CLASSES = {
     unlockLevel: 3,
     unlockCost: 300,
     abilities: [
-      { id: "system_override", name: "System Override", desc: "Hijack enemy systems. Deals 12-18 damage and reduces enemy power by 3 for 3 turns.", type: "attack", minPower: 12, maxPower: 18, cooldown: 1, maxCooldown: 2, cost: 0, debuff: { stat: "power", amount: 3, duration: 3 }},
-      { id: "emp_discharge", name: "EMP Discharge", desc: "Electromagnetic pulse. Deals 16-24 damage to all enemies and stuns for 1 turn.", type: "attack", minPower: 16, maxPower: 24, cooldown: 2, maxCooldown: 3, stun: 1, cost: 0 },
-      { id: "firewall_breach", name: "Firewall Breach", desc: "Break through defenses. Ignores 50% of enemy defense. Deals 10-20 damage. 40% crit chance.", type: "attack", minPower: 10, maxPower: 20, cooldown: 1, maxCooldown: 2, cost: 0, ignoreDefense: 0.5, critBonus: 0.40 },
-      { id: "data_siphon", name: "Data Siphon", desc: "Drain enemy energy. Heal 12-20 HP and steal 8-14 credits.", type: "heal", healMin: 12, healMax: 20, cooldown: 3, maxCooldown: 4, creditSteal: 14, cost: 0 },
-      { id: "ghost_protocol", name: "Ghost Protocol", desc: "Become invisible. Dodge all attacks for 3 turns. Next attack deals double damage.", type: "buff", effect: "stealth_up", duration: 3, cooldown: 4, maxCooldown: 6, cost: 0 },
+      { id: "system_override", name: "System Override", desc: "Hijack enemy systems. Deals 16-22 damage and reduces enemy power by 3 for 3 turns. [Flavor: A targeted neural dump that overwrites the enemy's combat protocols — their own systems turn against them.]", type: "attack", minPower: 16, maxPower: 22, cooldown: 1, maxCooldown: 2, cost: 0, debuff: { stat: "power", amount: 3, duration: 3 }},
+      { id: "emp_discharge", name: "EMP Discharge", desc: "Electromagnetic pulse. Deals 22-30 damage to all enemies and stuns for 1 turn. [Flavor: A focused EMP burst that fries enemy circuitry — devastating against clusters of Aegis units.]", type: "attack", minPower: 22, maxPower: 30, cooldown: 2, maxCooldown: 3, stun: 1, cost: 0 },
+      { id: "firewall_breach", name: "Firewall Breach", desc: "Break through defenses. Ignores 50% of enemy defense. Deals 14-22 damage. 40% crit chance. [Flavor: A targeted exploit that cracks through the enemy's firewall layer by layer.]", type: "attack", minPower: 14, maxPower: 22, cooldown: 1, maxCooldown: 2, cost: 0, ignoreDefense: 0.5, critBonus: 0.40 },
+      { id: "data_siphon", name: "Data Siphon", desc: "Drain enemy energy. Heal 18-28 HP and steal 8-14 credits. [Flavor: A targeted data siphon that routes enemy power reserves directly into your neural implant.]", type: "heal", healMin: 18, healMax: 28, cooldown: 3, maxCooldown: 4, creditSteal: 14, cost: 0 },
+      { id: "ghost_protocol", name: "Ghost Protocol", desc: "Activate stealth field. Cost: 5 HP. Dodge all attacks for 2 turns. Next attack deals 1.5x damage. [Flavor: A focused neural cloak that bends light and defeats all sensor arrays — at the cost of temporary neural feedback.]", type: "buff", effect: "stealth_up", duration: 2, cooldown: 4, maxCooldown: 6, cost: 5 },
       { id: "memory_wipe", name: "Memory Wipe", desc: "Erases all enemy buffs and debuffs, then deals 14-22 damage. [Flavor: A targeted neural dump that overwrites the enemy's combat protocols — their own systems turn against them.]", type: "attack", minPower: 14, maxPower: 22, cooldown: 3, maxCooldown: 4, cost: 0, stripBuffs: true },
-      { id: "code_injection", name: "Code Injection", desc: "Injects malicious code dealing 8 damage over 3 turns (DoT). Also deals 10-16 immediate damage. [Flavor: Digital malware injected directly into the enemy's core — the corruption festers, eating from the inside.]", type: "attack", minPower: 10, maxPower: 16, cooldown: 2, maxCooldown: 3, cost: 0, dot: { amount: 8, duration: 3 }},
-      { id: "ai_disruption", name: "AI Disruption", desc: "Stuns enemy for 1 turn and removes 1 buff from them. Deals 12-18 damage. [Flavor: A cascade failure in the enemy's AI — logic loops eat their processing, leaving them frozen and vulnerable.]", type: "attack", minPower: 12, maxPower: 18, cooldown: 3, maxCooldown: 4, cost: 0, stun: 1, stripBuffs: true }
+      { id: "code_injection", name: "Code Injection", desc: "Injects malicious code dealing 10 damage over 3 turns (DoT). Also deals 10-16 immediate damage. [Flavor: Digital malware injected directly into the enemy's core — the corruption festers, eating from the inside.]", type: "attack", minPower: 10, maxPower: 16, cooldown: 2, maxCooldown: 3, cost: 0, dot: { amount: 10, duration: 3 }},
+      { id: "ai_disruption", name: "AI Disruption", desc: "Stuns enemy for 1 turn and removes 1 buff from them. Deals 12-18 damage. [Flavor: A cascade failure in the enemy's AI — logic loops eat their processing, leaving them frozen and vulnerable.]", type: "attack", minPower: 12, maxPower: 18, cooldown: 3, maxCooldown: 4, cost: 0, stun: 1, stripBuffs: true },
+      { id: "neural_burst", name: "Neural Burst", desc: "Overload enemy neural implant. Deals 20-28 damage and stuns for 1 turn. [Flavor: A focused neural overload that fries the enemy's cognitive processors — they're stunned and deaf to the world.]", type: "attack", minPower: 20, maxPower: 28, cooldown: 3, maxCooldown: 4, cost: 0, stun: 1 }
     ]
   }
 };
@@ -343,21 +344,21 @@ export const WARDEN_BOSS = {
   name: 'The Warden',
   nameForLowLevel: 'Warden Avatar',
   level: 'boss',
-  hpMax: 3000,
-  hp: 3000,
+  hpMax: 2000,
+  hp: 2000,
   power: 45,
   defense: 30,
   evasion: 8,
   speed: 20,
-  xpReward: 600,
-  creditReward: 2000,
+  xpReward: 800,
+  creditReward: 3000,
   type: 'warden',
   isBoss: true,
   // Phase HP thresholds (percentages of hpMax)
   phases: {
-    phase1: { minPct: 61,  maxPct: 100, label: 'SURVEILLANCE MODE' },  // HP > 60%
-    phase2: { minPct: 31,  maxPct: 60,  label: 'AGGRESSIVE MODE' },   // HP 30-60%
-    phase3: { minPct: 0,   maxPct: 30,  label: 'DESPERATE MODE' }     // HP < 30%
+    phase1: { minPct: 51,  maxPct: 100, label: 'SURVEILLANCE MODE' },  // HP > 50%
+    phase2: { minPct: 21,  maxPct: 50,  label: 'AGGRESSIVE MODE' },   // HP 20-50%
+    phase3: { minPct: 0,   maxPct: 20,  label: 'DESPERATE MODE' }     // HP < 20%
   },
   // Unique boss traits not available to regular enemies
   bossTraits: {
@@ -419,9 +420,9 @@ export const WARDEN_ABILITIES = {
     {
       id: 'drone_swarm',
       name: 'Drone Swarm',
-      damageMin: 25,
-      damageMax: 40,
-      period: 2,
+      damageMin: 20,
+      damageMax: 32,
+      period: 3,
       emoji: '🤖',
       desc: 'A swarm of Aegis micro-drones descends, each laced with nano-shrapnel.'
     },
@@ -462,8 +463,8 @@ export const WARDEN_ABILITIES = {
     {
       id: 'titan_deployment',
       name: 'Titan Deployment',
-      damageMin: 35,
-      damageMax: 55,
+      damageMin: 25,
+      damageMax: 45,
       period: 3,
       emoji: '🛡️',
       stun: 1,
@@ -505,18 +506,18 @@ export const WARDEN_ABILITIES = {
     {
       id: 'area_denial',
       name: 'Area Denial',
-      damageMin: 30,
-      damageMax: 45,
-      period: 1,
+      damageMin: 25,
+      damageMax: 35,
+      period: 2,
       emoji: '💥',
-      multiHit: 3,
+      multiHit: 2,
       desc: 'THE WARDEN detonates every explosive charge in the sector — a barrage of fire.'
     },
     {
       id: 'power_spike',
       name: 'Power Spike',
-      buffPower: 15,
-      buffDuration: 3,
+      buffPower: 10,
+      buffDuration: 2,
       period: 3,
       emoji: '🔥',
       desc: 'THE WARDEN channels raw power through its core — devastating strikes ahead.'
@@ -524,11 +525,11 @@ export const WARDEN_ABILITIES = {
     {
       id: 'sector_lockdown',
       name: 'Sector Lockdown',
-      damageMin: 40,
-      damageMax: 60,
+      damageMin: 30,
+      damageMax: 45,
       period: 4,
       emoji: '🔒',
-      stun: 2,
+      stun: 1,
       desc: 'Every exit seals — THE WARDEN locks the sector and delivers a crushing blow.',
       isBossOnly: true,
       category: 'offense'
@@ -547,7 +548,7 @@ export const WARDEN_ABILITIES = {
     {
       id: 'grid_reboot',
       name: 'Grid Reboot',
-      healAmount: 300,
+      healAmount: 150,
       period: 6,
       emoji: '♻️',
       desc: 'THE WARDEN initiates a full system reboot — its damaged systems begin healing.',
@@ -566,7 +567,7 @@ export const WARDEN_BOSS_ONLY_ABILITIES = [
   'data_purge',          // Phase 2 — strips player buffs
   'sector_lockdown',     // Phase 3 — high damage + long stun
   'omniscience',         // Phase 3 — guaranteed crit on next attacks
-  'grid_reboot'          // Phase 3 — heals 300 HP
+  'grid_reboot'          // Phase 3 — heals 150 HP
 ];
 
 /**
