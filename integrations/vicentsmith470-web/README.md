@@ -33,11 +33,9 @@ python integrations/vicentsmith470-web/rustchain_wallet_supply_verifier.py \
 - `/wallet/balance` echoes the requested `miner_id`.
 - `amount_i64` is an integer micro-unit value and exactly equals
   `amount_rtc * 1_000_000`.
-- `/api/tokenomics` reports `total_supply_urtc` equal to
   `total_supply_rtc * 1_000_000`, with no fractional micro-units.
 - Local self-test examples reject fractional micro-unit inputs such as
   `amount_rtc=0.0000005`, `amount_i64=1.9`, and
-  `total_supply_urtc=1000000.5`.
 
 No private key, seed phrase, wallet export, signing key, admin key, write
 endpoint, or transaction action is used.

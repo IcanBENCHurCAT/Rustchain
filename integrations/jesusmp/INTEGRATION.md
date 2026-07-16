@@ -5,7 +5,6 @@
 tier: T1
 target: rustchain
 language: python
-endpoints_used: [/api/miners, /api/tokenomics]
 wallet: jesusmp
 starred: yes
 ```
@@ -13,7 +12,6 @@ starred: yes
 ## What it does
 Queries the live RustChain API endpoints and renders a human-readable network status report:
 - `/api/miners` - List of active miners with hardware info and last attestation time
-- `/api/tokenomics` - Token allocation breakdown
 
 ## How to run
 ```bash

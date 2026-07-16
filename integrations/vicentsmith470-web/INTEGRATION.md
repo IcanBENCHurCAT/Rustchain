@@ -1,7 +1,6 @@
 tier: T2
 target: rustchain
 language: Python
-endpoints_used: ["/health", "/wallet/balance", "/api/tokenomics"]
 wallet: RTCf69dd944558d4e843a4a676495a97638055caea2
 starred: yes
 
@@ -13,7 +12,6 @@ responses:
 
 - `/wallet/balance` echoes the requested miner/wallet id and keeps `amount_i64`
   consistent with `amount_rtc` in micro-RTC units.
-- `/api/tokenomics` keeps `total_supply_urtc` consistent with
   `total_supply_rtc` in micro-RTC units.
 
 Run:
